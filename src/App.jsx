@@ -7,6 +7,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/SignUp';
+import SignIn from './pages/Sign-In-Nikil';
+import SignUp from './pages/Sign-Up-Nikil';
 
 const App = () => {
   return (
@@ -19,6 +21,11 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+
+          {/* Nikil Pages */}
+
+          <Route path="/admin/signin" element={<SignIn/>} />
+          <Route path="/admin/signup" element={<SignUp/>} />
 
 
           {/* You can add more routes like Signup, Dashboard etc. here */}
