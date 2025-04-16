@@ -1,38 +1,49 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import MainLayout from './layouts/MainLayout';
+import AdminLayout from './layouts/AdminLayout';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Signup from './pages/SignUp';
+import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgetPassword';
-import VerifyCode from './pages/VerifyCode';
 import ResetPassword from './pages/ResetPassword';
+import VerifyCode from './pages/VerifyCode';
+import AdminDashboard from './pages/admin/Analytics';
+import Users from './pages/admin/User';
+import Topics from './pages/admin/Topics';
 
 const App = () => {
+  const userRole = localStorage.getItem('role'); // "admin" | "user" | null
+
   return (
-    <>
-      <Navbar />
+    <Routes>
 
-      {/* Main Content Area */}
-      <div className="w-screen min-h-screen overflow-y-auto">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-code" element={<VerifyCode />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+      {/* Public Layout */}
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-code" element={<VerifyCode />} />
+      </Route>
+      <Route
+        path="/admin"
+        element={userRole === 'admin' ? <AdminLayout /> : <Navigate to="/login" replace />}
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<Users />} />
+        <Route path="topics" element={<Topics />} />
+      </Route>
 
 
-          {/* You can add more routes like Signup, Dashboard etc. here */}
-        </Routes>
-      </div>
+     
 
-      <Footer />
-    </>
+      {/* Catch-all redirect */}
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 };
 
