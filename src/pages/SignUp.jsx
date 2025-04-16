@@ -2,7 +2,7 @@ import React from 'react';
 
 const Signup = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-start justify-center pt-24 bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white p-8 rounded shadow-md">
         <h2 className="text-2xl font-bold text-center text-indigo-600 mb-2">Create an Account</h2>
         <p className="text-center text-gray-600 mb-6">Join Smart Learning Companion today</p>
