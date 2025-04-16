@@ -3,6 +3,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importing FontAwesome icons
+import OTPInput from "../components/InputOtp";
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is required"),
@@ -19,11 +20,23 @@ const SignUpSchema = Yup.object().shape({
 const SignUp = () => {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for password visibility
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false); // State for confirm password visibility
+  const [showOtpModal, setShowOtpModal] = useState(false); // State for OTP modal visibility
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]); // 6-digit OTP array
+
 
   const handleSubmit = (values) => {
     console.log(values);
+    setShowOtpModal(true);
     // Handle form submission, like calling an API for registration
   };
+
+  const handleOtpSubmit = (e) => {
+    e.preventDefault();
+    console.log("OTP submitted: ", otp.join(""));
+    // Handle OTP submission logic
+    setShowOtpModal(false); // Close OTP modal after submission
+  };
+
 
   return (
     <div className="flex min-h-screen justify-center bg-primary-foreground">
@@ -160,6 +173,32 @@ const SignUp = () => {
             </Link>
           </p>
         </div>
+
+        {showOtpModal && (
+        <div className="fixed inset-0 flex justify-center items-center bg-secondary bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl">
+            <form onSubmit={handleOtpSubmit}>
+              <OTPInput otp={otp} setOtp={setOtp} />
+              <button
+                type="submit"
+                className="w-full py-2 bg-primary text-white rounded-lg font-bold"
+              >
+                Verify OTP
+              </button>
+
+              {/* Resend Text */}
+              <div className="text-center mt-4">
+                <p className="text-gray-600 text-sm">
+                  Didn't receive an email?{" "}
+                  <button className="text-primary font-bold">Resend</button>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
       </div>
     </div>
   );

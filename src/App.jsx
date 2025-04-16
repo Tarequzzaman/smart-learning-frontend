@@ -7,8 +7,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/SignUp';
-import SignIn from './pages/Sign-In-Nikil';
-import SignUp from './pages/Sign-Up-Nikil';
+import SignIn from './pages/Sign-In';
+import SignUp from './pages/Sign-Up';
 
 const App = () => {
   return (
