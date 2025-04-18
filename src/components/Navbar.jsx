@@ -6,14 +6,14 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white shadow-md px-6 py-4 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Logo */}
+      <div className="w-full flex justify-between items-center">
+        {/* Logo aligned far left */}
         <Link to="/" className="text-2xl font-bold text-indigo-600">
-          SmartLearn
+        Smart Learning Companion
         </Link>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-6 items-center">
+        {/* Desktop Menu aligned far right */}
+        <div className="hidden md:flex space-x-6 items-center ml-auto">
           <Link to="/" className="text-gray-700 hover:text-indigo-600 font-medium">Home</Link>
           <Link to="/about" className="text-gray-700 hover:text-indigo-600 font-medium">About</Link>
           <Link to="/features" className="text-gray-700 hover:text-indigo-600 font-medium">Features</Link>
@@ -26,7 +26,7 @@ const Navbar = () => {
         </div>
 
         {/* Hamburger Menu (Mobile) */}
-        <div className="md:hidden">
+        <div className="md:hidden ml-auto">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-gray-700 focus:outline-none"
@@ -39,19 +39,9 @@ const Navbar = () => {
               xmlns="http://www.w3.org/2000/svg"
             >
               {isOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
