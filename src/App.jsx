@@ -39,8 +39,7 @@ const App = () => {
         <Route path="topics" element={<Topics />} />
       </Route>
 
-      <Route exact path="/dashboard" element={<DashboardHome />} />
-
+      <Route path="/dashboard/home" element={<DashboardHome />} />
 
 
      
