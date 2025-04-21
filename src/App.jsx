@@ -13,6 +13,7 @@ import VerifyCode from './pages/VerifyCode';
 import AdminDashboard from './pages/admin/Analytics';
 import Users from './pages/admin/User';
 import Topics from './pages/admin/Topics';
+import DashboardHome from './pages/user/UserDashboardHome';
 
 const App = () => {
   const userRole = localStorage.getItem('role'); // "admin" | "user" | null
@@ -37,6 +38,9 @@ const App = () => {
         <Route path="users" element={<Users />} />
         <Route path="topics" element={<Topics />} />
       </Route>
+
+      <Route exact path="/dashboard" element={<DashboardHome />} />
+
 
 
      
