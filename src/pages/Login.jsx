@@ -24,7 +24,7 @@ const Login = () => {
       window.location.href = "/admin";
     } else if (email && password) {
       localStorage.setItem("role", "user");
-      navigate("/");
+      navigate("/topic-selection");
     } else {
       alert("Invalid credentials!");
     }
