@@ -5,7 +5,7 @@ import { FaHome, FaUsers, FaMicroscope, FaSignOutAlt ,} from "react-icons/fa"; /
 const Sidebar = () => {
   const location = useLocation(); // Get the current path
   const links = [
-    { href: "/dashboard", label: "Home", icon: <FaHome size={22} /> },
+    { href: "/dashboard/home", label: "Home", icon: <FaHome size={22} /> },
 
     {
       href: "/Quizzes",
@@ -13,7 +13,7 @@ const Sidebar = () => {
       icon: <FaMicroscope size={22} />,
     },
     {
-      href: "/myAccount",
+      href: "/dashboard/my-account",
       label: "My Account",
       icon: <FaUsers size={22} />,
     },
