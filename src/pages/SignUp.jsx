@@ -4,6 +4,9 @@ import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import boySignup from "../assets/boy-signup.png"; // ✅ Ensure correct path
+import { registerUser } from "../services/userService";
+import { useNavigate } from "react-router-dom";
+
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is required"),
@@ -14,11 +17,23 @@ const SignUpSchema = Yup.object().shape({
 });
 
 const SignUp = () => {
+  const navigate = useNavigate();
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
-  const handleSubmit = (values) => {
-    console.log(values);
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      const result = await registerUser(values);
+      alert("Account created successfully!");
+      resetForm();
+      navigate("/login"); // ✅ Redirect to login
+
+    } catch (error) {
+      alert(`Signup failed: ${error.message}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

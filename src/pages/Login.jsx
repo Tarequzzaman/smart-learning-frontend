@@ -4,6 +4,8 @@ import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import loginImage from "../assets/login.png"; // Make sure this image is in your assets folder
+import { loginUser } from "../services/userService";
+
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -16,19 +18,33 @@ const Login = () => {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values, { setSubmitting }) => {
     const { email, password } = values;
+  
+    try {
+      const response = await loginUser(email, password);
+  
+      // Store token and user info in localStorage
+      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("user", JSON.stringify(response.user)); // Store full user info
+  
+      const userRole = response.user.role;
+      console.log(response)
+      // Redirect based on role
+      if (userRole === "admin") {
+        localStorage.setItem("role", "admin");
+        window.location.href = "/admin";
 
-    if (email === "admin@smartlearning.com" && password === "admin") {
-      localStorage.setItem("role", "admin");
-      window.location.href = "/admin";
-    } else if (email && password) {
-      localStorage.setItem("role", "user");
-      navigate("/");
-    } else {
-      alert("Invalid credentials!");
+      } else {
+        navigate("/topic-selection");
+      }
+    } catch (error) {
+      alert(`Login failed: ${error.message}`);
+    } finally {
+      setSubmitting(false);
     }
   };
+  
 
   return (
     <div className="flex min-h-screen justify-center items-center bg-gray-50 px-6">
