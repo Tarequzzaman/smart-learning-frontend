@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import UserDashboardLayout from "./UserDashboardLayout";
 import OTPInput from "./InputOtp";
-
+import { useNavigate } from "react-router-dom";
 const UserProfile = () => {
+  const navigate = useNavigate();
+
   const [photo, setPhoto] = useState(null); // State for profile photo
   const [name, setName] = useState("John Marpung"); // Placeholder for user name
   const [email, setEmail] = useState("john@gmail.com"); // Placeholder email
@@ -26,9 +28,13 @@ const UserProfile = () => {
     }
   };
 
+  const handleCancel = ()=> {
+    navigate(-1);
+
+  }
+
   return (
-    <UserDashboardLayout>
-      <div className="mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="mx-auto p-6 bg-white rounded-lg shadow-md max-w-[800px]">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-2xl font-bold mb-2">Personal Info</h2>
@@ -41,12 +47,15 @@ const UserProfile = () => {
             {/* Save/Cancel Buttons */}
             <div className="flex justify-end space-x-4">
               <button
+              onClick={handleCancel}
                 type="button"
                 className="px-6 py-2 bg-white text-gray-400 border border-gray-300 rounded-md cursor-pointer"
               >
                 Cancel
               </button>
               <button
+                onClick={handleCancel}
+
                 type="submit"
                 className="px-6 py-2 bg-primary text-white font-medium rounded-md cursor-pointer hover:bg-blue-800 transition duration-200"
               >
@@ -213,7 +222,6 @@ const UserProfile = () => {
           )}
         </div>
       </div>
-    </UserDashboardLayout>
   );
 };
 
