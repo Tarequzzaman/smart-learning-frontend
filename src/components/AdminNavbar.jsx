@@ -6,7 +6,9 @@ const AdminNavbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('role');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
     navigate('/login');
   };
 

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { HiOutlineMail } from 'react-icons/hi';
 
 const VerifyCode = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email || ''; // fallback if not provided
-
+  const email = location.state?.email || '';
   const [code, setCode] = useState('');
 
   const handleSubmit = (e) => {
@@ -17,8 +17,6 @@ const VerifyCode = () => {
     }
 
     console.log('Verification code entered:', code);
-
-    // Simulate success
     setTimeout(() => {
       navigate('/reset-password');
     }, 1000);
@@ -35,41 +33,53 @@ const VerifyCode = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center pt-24 bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center text-indigo-600 mb-2">Enter Verification Code</h2>
-        <p className="text-center text-gray-600 mb-6">We've sent a 6-digit code to <strong>{email}</strong>.</p>
+    <div className="min-h-screen flex flex-col items-center pt-24 bg-white px-4">
+      {/* Icon */}
+      <div className="bg-indigo-100 text-indigo-600 p-3 rounded-full mb-4">
+        <HiOutlineMail size={28} />
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">6-Digit Code</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              maxLength="6"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              required
-              placeholder="e.g. 123456"
-              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded tracking-widest text-center text-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+      {/* Heading */}
+      <h2 className="text-2xl font-bold text-gray-900 mb-1">Verify your email</h2>
+      <p className="text-gray-600 mb-8 text-center">
+        Enter the 6-digit code sent to <strong>{email}</strong>.
+      </p>
 
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition"
-          >
-            Verify Code
-          </button>
-        </form>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength="6"
+            required
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="e.g. 123456"
+            className="w-full px-4 py-2 border border-gray-300 rounded tracking-widest text-center text-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
 
         <button
-          type="button"
-          onClick={handleResendCode}
-          className="w-full bg-gray-200 text-indigo-600 py-2 rounded font-semibold hover:bg-gray-300 transition mt-4"
+          type="submit"
+          className="w-full bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition"
         >
-          Resend Code
+          Verify Code
         </button>
+      </form>
+
+      {/* Resend */}
+      <button
+        onClick={handleResendCode}
+        className="mt-6 text-indigo-600 font-medium hover:underline text-sm"
+      >
+        Resend Code
+      </button>
+
+      {/* Back to login */}
+      <div className="mt-4 text-sm text-gray-500">
+        <a href="/login" className="hover:underline">Back to login</a>
       </div>
     </div>
   );
