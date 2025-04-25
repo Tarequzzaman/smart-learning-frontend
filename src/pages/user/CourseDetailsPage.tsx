@@ -8,7 +8,7 @@ const CourseDetailsPage = () => {
   const [selectedTab, setSelectedTab] = useState("ongoing");
   const [currentChapter, setCurrentChapter] = useState(2);
   const [progress, setProgress] = useState(25);
-  const [dropdownVisible , setDropdownVisible] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const handleBack = () => {
     navigate(-1);
@@ -23,18 +23,17 @@ const CourseDetailsPage = () => {
     setProgress(100);
   };
 
-  const handleUserButtonClick = ()=> {
-    setDropdownVisible(!dropdownVisible)
-
-  }
+  const handleUserButtonClick = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
 
   const handleMyAccountClick = () => {
-    navigate('/my-account')
-  }
+    navigate("/my-account");
+  };
 
   const handleLogOutClick = () => {
-    navigate('/signin')
-  }
+    navigate("/signin");
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -44,32 +43,36 @@ const CourseDetailsPage = () => {
           <span className="text-2xl">&lt;</span>
         </button>
         <h1 className="text-3xl font-semibold text-gray-900">My Learning</h1>
-        <button onClick={handleUserButtonClick} className="text-2xl text-gray-700">
+        <button
+          onClick={handleUserButtonClick}
+          className="text-2xl text-gray-700"
+        >
           <FaUserCircle />
         </button>
         {/* Dropdown Menu */}
         {dropdownVisible && (
-            <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-              <ul className="space-y-2 p-3">
-                <li>
-                  <button
+          <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+            <ul className="space-y-2 p-3">
+              <li>
+                <button
                   onClick={handleMyAccountClick}
-                    className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
-                  >
-                    My Account
-                  </button>
-                </li>
-                <li>
-                  <button
+                  className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
+                >
+                  My Account
+                </button>
+              </li>
+
+              <li>
+                <button
                   onClick={handleLogOutClick}
-                    className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
-                  >
-                    Log Out
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+                  className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
+                >
+                  Log Out
+                </button>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Tabs Section */}
@@ -127,8 +130,8 @@ const CourseDetailsPage = () => {
                   </div>
                   <div className="flex justify-between mt-2">
                     <span>0%</span>
-                    {progress < 100 && <span>{progress}%</span> }
-                    
+                    {progress < 100 && <span>{progress}%</span>}
+
                     <span>100%</span>
                   </div>
                 </div>
@@ -170,7 +173,7 @@ const CourseDetailsPage = () => {
                   </div>
                   <div className="flex justify-between mt-2">
                     <span>0%</span>
-                    {progress < 100 && <span>{progress}%</span> }                    
+                    {progress < 100 && <span>{progress}%</span>}
                     <span>100%</span>
                   </div>
                 </div>

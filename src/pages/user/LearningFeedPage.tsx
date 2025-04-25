@@ -22,6 +22,10 @@ const LearningFeedPage = () => {
     navigate("/signin");
   };
 
+  const handleOngoingClick = () => {
+    navigate("/course-details");
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* Header Section */}
@@ -55,6 +59,14 @@ const LearningFeedPage = () => {
               </li>
               <li>
                 <button
+                  onClick={handleOngoingClick}
+                  className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
+                >
+                  Ongoing
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={handleLogOutClick}
                   className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
                 >
@@ -68,10 +80,6 @@ const LearningFeedPage = () => {
 
       {/* Feed Content */}
       <div className="mt-10 bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-6">
-          Let's start learning!
-        </h2>
-
         {/* Courses Section */}
         <div className="mb-6">
           <h3 className="text-2xl font-semibold mb-4">Courses you may like</h3>
