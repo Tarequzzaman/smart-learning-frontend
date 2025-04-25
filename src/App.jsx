@@ -17,6 +17,8 @@ import DashboardHome from './pages/user/UserDashboardHome';
 import TopicSelectionPage from './pages/user/TopicSelectionPage';
 import LearningFeedPage from './pages/user/LearningFeedPage';
 import UserProfile from './components/UserDashboardMyAccount';
+import CourseDetailsPage from './pages/user/CourseDetailsPage';
+import QuizPage from './pages/user/QuizPage';
 
 const App = () => {
   const userRole = localStorage.getItem('role'); // "admin" | "user" | null
@@ -45,10 +47,12 @@ const App = () => {
       <Route path="/dashboard/home" element={<DashboardHome />} />
       <Route path="/topic-selection" element={<TopicSelectionPage />} />
       <Route path="/learning-feed" element={<LearningFeedPage />} />
+      <Route path="/course-details" element={<CourseDetailsPage />} />
+      <Route path="/quiz" element={<QuizPage />} />
 
 
 
-      <Route path="/dashboard/my-account" element={<UserProfile />} />
+      <Route path="/my-account" element={<UserProfile />} />
 
 
      
