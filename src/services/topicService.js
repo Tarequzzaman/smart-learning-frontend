@@ -1,29 +1,141 @@
-// src/services/topicService.js
 
-// Mocked topic data (replace with actual API later)
-const mockTopics = [
-    { id: 1, title: 'Python Basics', description: 'Learn Python from scratch.' },
-    { id: 2, title: 'Advanced JavaScript', description: 'Master JavaScript for complex applications.' },
-    { id: 3, title: 'Data Structures & Algorithms', description: 'Learn core data structures and algorithms.' },
-  ];
+const API_URL = "http://0.0.0.0:8004";
+
+export const getTopics = async () => {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("Access token not found. Please log in.");
+  }
+
+  const response = await fetch(`${API_URL}/topics`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to fetch topics");
+  }
+
+  const data = await response.json();
+
+  return data.map((topic) => ({
+    id: topic.id,
+    title: topic.title,
+    description: topic.description,
+    createdBy: `${topic.creator.first_name} ${topic.creator.last_name}`,
+    createdAt: new Date().toISOString().split("T")[0], 
+  }));
+};
+
   
-  // Simulate fetching topics
-  export const getTopics = async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockTopics);
-      }, 500); // Simulate delay
-    });
-  };
+ export const createTopic = async (topicData) => {
+   const token = localStorage.getItem("access_token");
+   const userString = localStorage.getItem("user");
+ 
+   if (!token || !userString) {
+     throw new Error("Missing user or token. Please log in again.");
+   }
+ 
+   const user = JSON.parse(userString);
+ 
+   const response = await fetch(`${API_URL}/topics`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       Authorization: `Bearer ${token}`,
+     },
+     body: JSON.stringify(topicData),
+   });
+ 
+   if (!response.ok) {
+     const error = await response.json();
+     throw new Error(error.detail || "Failed to create topic");
+   }
+ 
+   const created = await response.json();
   
-  // Simulate creating a new topic
-  export const createTopic = async (topicData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newTopic = { id: mockTopics.length + 1, ...topicData };
-        mockTopics.push(newTopic);
-        resolve(newTopic);
-      }, 500); // Simulate delay
-    });
+   console.log({
+    id: created.id,
+    title: created.title,
+    description: created.description,
+    createdBy: `${user.first_name} ${user.last_name}`, 
+    createdAt: new Date().toISOString().split("T")[0],
+  });
+
+   return {
+     id: created.id,
+     title: created.title,
+     description: created.description,
+     createdBy: `${user.first_name} ${user.last_name}`, 
+     createdAt: new Date().toISOString().split("T")[0],
+   };
+ };
+
+
+ export const updateTopic = async (id, topicData) => {
+  const token = localStorage.getItem("access_token");
+  const userString = localStorage.getItem("user");
+
+  if (!token || !userString) {
+    throw new Error("Missing user or token. Please log in again.");
+  }
+
+  const user = JSON.parse(userString);
+
+  const response = await fetch(`${API_URL}/topics/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(topicData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to update topic");
+  }
+
+  const updated = await response.json();
+
+  return {
+    id: updated.id,
+    title: updated.title,
+    description: updated.description,
+    createdBy: `${updated.creator.first_name} ${updated.creator.last_name}`,
+    createdAt: new Date().toISOString().split("T")[0],
   };
+};
+
+
+export const deleteTopic = async (id) => {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("Access token not found. Please log in.");
+  }
+
+  const response = await fetch(`${API_URL}/topics/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok && response.status !== 204) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to delete topic");
+  }
+};
+
+
+ 
+
+  
+
+
+
   
