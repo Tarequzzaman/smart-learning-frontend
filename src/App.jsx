@@ -19,6 +19,7 @@ import LearningFeedPage from './pages/user/LearningFeedPage';
 import UserProfile from './components/UserDashboardMyAccount';
 import CourseDetailsPage from './pages/user/CourseDetailsPage';
 import QuizPage from './pages/user/QuizPage';
+import ExploreTopics from './pages/ExploreTopics';
 
 const App = () => {
   const userRole = localStorage.getItem('role'); // "admin" | "user" | null
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/explore" element={<ExploreTopics />} /> 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-code" element={<VerifyCode />} />

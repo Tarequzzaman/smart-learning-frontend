@@ -1,25 +1,36 @@
-// src/services/userService.js
+const API_URL = "http://0.0.0.0:8004";
 
-// Mocked user data (replace with actual API later)
-const mockUsers = [
-    { id: 1, name: 'John Doe', email: 'john@example.com' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
-    { id: 3, name: 'Sam Wilson', email: 'sam@example.com' },
-  ];
-  
-  // Simulate fetching users
-  export const getUsers = async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockUsers);
-      }, 500); // Simulate delay
-    });
-  };
+export const getUsers = async () => {
+  const token = localStorage.getItem("access_token");
 
+  if (!token) {
+    throw new Error("Access token not found. Please log in.");
+  }
 
-  // src/services/authService.js
+  const response = await fetch(`${API_URL}/users`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-const API_URL = "http://0.0.0.0:8004"; // Replace with actual URL in prod
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to fetch users");
+  }
+
+  const data = await response.json();
+
+  // Map API response to frontend-friendly format
+  return data.map((user) => ({
+    id: user.id,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    email: user.email,
+    role: user.role,
+    isActive: user.is_active,
+  }));
+};
+
 
 export const registerUser = async (userData) => {
   try {
@@ -69,6 +80,10 @@ export const loginUser = async (email, password) => {
       }),
     });
 
+    console.log(email)
+    console.log(password)
+
+
     const data = await response.json();
 
     if (!response.ok) throw new Error(data.detail || "Invalid credentials");
@@ -78,3 +93,61 @@ export const loginUser = async (email, password) => {
     throw error;
   }
 };
+
+
+export const updateUser = async (userId, updatedData) => {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("Access token not found.");
+  }
+
+  const response = await fetch(`${API_URL}/users/${userId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      first_name: updatedData.firstName,
+      last_name: updatedData.lastName,
+      role: updatedData.role.toLowerCase(),
+    }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to update user");
+  }
+
+  return {
+    id: data.id,
+    firstName: data.first_name,
+    lastName: data.last_name,
+    email: data.email,
+    role: data.role,
+    isActive: data.is_active,
+  };
+};
+
+export const deleteUser = async (userId) => {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("Access token missing.");
+  }
+
+  const response = await fetch(`${API_URL}/users/${userId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to delete user");
+  }
+
+  return true; 
+};
+

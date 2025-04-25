@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import boySignup from "../assets/boy-signup.png"; // ✅ Ensure correct path
+import boySignup from "../assets/boy-signup.png"; 
 import { registerUser } from "../services/userService";
-import { useNavigate } from "react-router-dom";
-
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is required"),
@@ -18,7 +16,6 @@ const SignUpSchema = Yup.object().shape({
 
 const SignUp = () => {
   const navigate = useNavigate();
-
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
@@ -27,8 +24,7 @@ const SignUp = () => {
       const result = await registerUser(values);
       alert("Account created successfully!");
       resetForm();
-      navigate("/login"); // ✅ Redirect to login
-
+      navigate("/login");
     } catch (error) {
       alert(`Signup failed: ${error.message}`);
     } finally {
@@ -44,8 +40,8 @@ const SignUp = () => {
       </div>
 
       {/* Right Side */}
-      <div className="w-full max-w-lg bg-white p-10 rounded-lg shadow-md">
-        <h2 className="text-3xl font-bold text-indigo-600 mb-6 text-center">Create New Account</h2>
+      <div className="w-full max-w-lg p-10 text-center">
+        <h2 className="text-3xl font-bold text-indigo-600 mb-6">Create New Account</h2>
 
         <Formik
           initialValues={{
@@ -59,17 +55,27 @@ const SignUp = () => {
           onSubmit={handleSubmit}
         >
           {({ errors, touched }) => (
-            <Form>
+            <Form className="space-y-6 text-left">
               {/* First + Last Name */}
-              <div className="flex gap-4 mb-6">
+              <div className="flex gap-4">
                 <div className="w-1/2">
-                  <Field type="text" name="firstName" placeholder="First Name" className="w-full p-3 border border-gray-300 rounded bg-gray-100" />
+                  <Field
+                    type="text"
+                    name="firstName"
+                    placeholder="First Name"
+                    className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+                  />
                   {errors.firstName && touched.firstName && (
                     <div className="text-red-500 text-sm mt-1">{errors.firstName}</div>
                   )}
                 </div>
                 <div className="w-1/2">
-                  <Field type="text" name="lastName" placeholder="Last Name" className="w-full p-3 border border-gray-300 rounded bg-gray-100" />
+                  <Field
+                    type="text"
+                    name="lastName"
+                    placeholder="Last Name"
+                    className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+                  />
                   {errors.lastName && touched.lastName && (
                     <div className="text-red-500 text-sm mt-1">{errors.lastName}</div>
                   )}
@@ -77,15 +83,20 @@ const SignUp = () => {
               </div>
 
               {/* Email */}
-              <div className="mb-6">
-                <Field type="email" name="email" placeholder="Email Address" className="w-full p-3 border border-gray-300 rounded bg-gray-100" />
+              <div>
+                <Field
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+                />
                 {errors.email && touched.email && (
                   <div className="text-red-500 text-sm mt-1">{errors.email}</div>
                 )}
               </div>
 
               {/* Password */}
-              <div className="mb-6 relative">
+              <div className="relative">
                 <Field
                   type={passwordVisible ? "text" : "password"}
                   name="password"
@@ -104,7 +115,7 @@ const SignUp = () => {
               </div>
 
               {/* Confirm Password */}
-              <div className="mb-6 relative">
+              <div className="relative">
                 <Field
                   type={confirmPasswordVisible ? "text" : "password"}
                   name="confirmPassword"
@@ -123,7 +134,10 @@ const SignUp = () => {
               </div>
 
               {/* Submit Button */}
-              <button type="submit" className="w-full bg-indigo-600 text-white font-semibold py-3 rounded hover:bg-indigo-700 transition">
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 text-white font-semibold py-3 rounded hover:bg-indigo-700 transition"
+              >
                 Create Account
               </button>
             </Form>

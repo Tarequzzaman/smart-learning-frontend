@@ -14,7 +14,7 @@ const Home = () => {
           <a href="/signup" className="bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 font-semibold">
             Get Started
           </a>
-          <a href="/topics" className="border border-indigo-600 text-indigo-600 px-6 py-3 rounded hover:bg-indigo-100 font-semibold">
+          <a href="/explore" className="border border-indigo-600 text-indigo-600 px-6 py-3 rounded hover:bg-indigo-100 font-semibold">
             Explore Topics
           </a>
         </div>

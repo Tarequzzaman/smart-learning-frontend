@@ -4,9 +4,6 @@ const API_URL = "http://0.0.0.0:8004";
 export const getTopics = async () => {
   const token = localStorage.getItem("access_token");
 
-  if (!token) {
-    throw new Error("Access token not found. Please log in.");
-  }
 
   const response = await fetch(`${API_URL}/topics`, {
     headers: {
