@@ -87,18 +87,19 @@ const ExploreTopics = () => {
       </section>
 
       {/* Informational Section below the slider */}
-      <section className="mt-12 px-4 md:px-12 text-center">
-        <h2 className="text-2xl font-semibold text-indigo-700 mb-4">What are these Topics?</h2>
-        <p className="text-md md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          Each topic you see here represents a complete learning experience — including personalized content,
-          progress tracking, and AI-generated quizzes that adapt to your performance. Whether you're brushing up
-          on basics or diving into new skills, our system guides you step by step and remembers your progress
-          every time you return.
-        </p>
-        <p className="mt-4 text-indigo-600 font-medium">
-          Select a topic to begin your smart learning journey!
-        </p>
-      </section>
+      <section className="mt-12 px-4 md:px-12 text-center mb-20"> {/* <-- added mb-20 */}
+      <h2 className="text-2xl font-semibold text-indigo-700 mb-4">What are these Topics?</h2>
+      <p className="text-md md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+        Each topic you see here represents a complete learning experience — including personalized content,
+        progress tracking, and AI-generated quizzes that adapt to your performance. Whether you're brushing up
+        on basics or diving into new skills, our system guides you step by step and remembers your progress
+        every time you return.
+      </p>
+      <p className="mt-4 text-indigo-600 font-medium">
+        Select a topic to begin your smart learning journey!
+      </p>
+    </section>
+
     </main>
   );
 };
