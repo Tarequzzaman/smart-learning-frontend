@@ -1,20 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { createTopic, getTopics, updateTopic, deleteTopic } from '../../services/topicService';
 
 const Topics = () => {
-  const initialTopics = [
-    { id: 1, title: 'Python Basics', description: 'Introduction to Python', createdBy: 'Admin', createdAt: '2025-04-10' },
-    { id: 2, title: 'React for Beginners', description: 'Getting started with React', createdBy: 'Admin', createdAt: '2025-04-11' },
-    { id: 3, title: 'AI in Education', description: 'Using AI to enhance learning', createdBy: 'Admin', createdAt: '2025-04-13' },
-  ];
-
+  const initialTopics = []; // empty on load, you can fetch from API later
   const [topics, setTopics] = useState(initialTopics);
   const [search, setSearch] = useState('');
   const [editTopic, setEditTopic] = useState(null);
-  const [deleteTopic, setDeleteTopic] = useState(null);
+  const [topicToDelete, setTopicToDelete] = useState(null);
   const [newTopic, setNewTopic] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
-  const topicsPerPage = 10;
+  const topicsPerPage = 7;
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const fetched = await getTopics();
+        setTopics(fetched);
+      } catch (err) {
+        alert(`Failed to load topics: ${err.message}`);
+      }
+    };
+
+    fetchTopics();
+  }, []);
+
+
 
   const filteredTopics = topics.filter((topic) =>
     topic.title.toLowerCase().includes(search.toLowerCase())
@@ -25,12 +35,23 @@ const Topics = () => {
   const currentTopics = filteredTopics.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredTopics.length / topicsPerPage);
 
-  const handleUpdateTopic = () => {
-    setTopics((prev) =>
-      prev.map((topic) => (topic.id === editTopic.id ? editTopic : topic))
-    );
-    setEditTopic(null);
+  const handleUpdateTopic = async () => {
+    try {
+      const updated = await updateTopic(editTopic.id, {
+        title: editTopic.title,
+        description: editTopic.description,
+      });
+  
+      setTopics((prev) =>
+        prev.map((topic) => (topic.id === updated.id ? updated : topic))
+      );
+  
+      setEditTopic(null);
+    } catch (err) {
+      alert(`Failed to update topic: ${err.message}`);
+    }
   };
+  
 
   return (
     <div className="bg-white rounded shadow p-6">
@@ -72,11 +93,20 @@ const Topics = () => {
             </tr>
           </thead>
           <tbody>
-            {currentTopics.map((topic) => (
-              <tr key={topic.id} className="hover:bg-gray-50">
+            {currentTopics.map((topic, index) => (
+              <tr key={topic.id || index} className="hover:bg-gray-50">
                 <td className="px-4 py-2 border-b">{topic.id}</td>
                 <td className="px-4 py-2 border-b">{topic.title}</td>
-                <td className="px-4 py-2 border-b">{topic.description}</td>
+
+                <td className="px-4 py-2 border-b">
+                    <div
+                      className="whitespace-pre-line"
+                      dangerouslySetInnerHTML={{ __html: topic.description.replace(/\n/g, "<br>") }}
+                    />
+               </td>
+
+
+
                 <td className="px-4 py-2 border-b">{topic.createdBy}</td>
                 <td className="px-4 py-2 border-b">{topic.createdAt}</td>
                 <td className="px-4 py-2 border-b text-center space-x-4">
@@ -88,8 +118,8 @@ const Topics = () => {
                   </button>
                   <button
                     className="text-red-600 hover:underline"
-                    onClick={() => setDeleteTopic(topic)}
-                  >
+                    onClick={() => setTopicToDelete(topic)}
+                    >
                     Delete
                   </button>
                 </td>
@@ -206,16 +236,26 @@ const Topics = () => {
               </button>
               <button
                 className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-                onClick={() => {
-                  const newEntry = {
-                    id: topics.length + 1,
-                    title: newTopic.title,
-                    description: newTopic.description,
-                    createdBy: 'Admin',
-                    createdAt: new Date().toISOString().split('T')[0],
-                  };
-                  setTopics([...topics, newEntry]);
-                  setNewTopic(null);
+                onClick={async () => {
+                  try {
+                    const created = await createTopic({
+                      title: newTopic.title,
+                      description: newTopic.description,
+                    });
+
+                    const newEntry = {
+                      id: created.id,
+                      title: created.title,
+                      description: created.description,
+                      createdBy: created.createdBy,
+                      createdAt: new Date().toISOString().split("T")[0],
+                    };
+
+                    setTopics((prev) => [...prev, newEntry]);
+                    setNewTopic(null);
+                  } catch (err) {
+                    alert(`Failed to create topic: ${err.message}`);
+                  }
                 }}
               >
                 Add Topic
@@ -226,33 +266,39 @@ const Topics = () => {
       )}
 
       {/* Delete Modal */}
-      {deleteTopic && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded shadow-lg w-full max-w-md text-center">
-            <h2 className="text-2xl font-semibold text-red-600 mb-4">Confirm Deletion</h2>
-            <p className="text-gray-700 mb-6">
-              Are you sure you want to delete <span className="font-bold">{deleteTopic.title}</span>?
-            </p>
-            <div className="flex justify-center gap-4">
-              <button
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-                onClick={() => setDeleteTopic(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                onClick={() => {
-                  setTopics(topics.filter((t) => t.id !== deleteTopic.id));
-                  setDeleteTopic(null);
-                }}
-              >
-                Delete
-              </button>
-            </div>
+      {topicToDelete && (
+      <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+        <div className="bg-white p-8 rounded shadow-lg w-full max-w-md text-center">
+          <h2 className="text-2xl font-semibold text-red-600 mb-4">Confirm Deletion</h2>
+          <p className="text-gray-700 mb-6">
+            Are you sure you want to delete <span className="font-bold">{topicToDelete.title}</span>?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              onClick={() => setTopicToDelete(null)}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              onClick={async () => {
+                try {
+                  await deleteTopic(topicToDelete.id);
+                  setTopics((prev) => prev.filter((t) => t.id !== topicToDelete.id));
+                  setTopicToDelete(null);
+                } catch (err) {
+                  alert(`Failed to delete topic: ${err.message}`);
+                }
+              }}
+            >
+              Delete
+            </button>
           </div>
         </div>
-      )}
+      </div>
+    )}
+
     </div>
   );
 };
