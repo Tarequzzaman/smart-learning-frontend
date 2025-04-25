@@ -16,7 +16,6 @@ const Navbar = () => {
         <div className="hidden md:flex space-x-6 items-center ml-auto">
           <Link to="/" className="text-gray-700 hover:text-indigo-600 font-medium">Home</Link>
           <Link to="/about" className="text-gray-700 hover:text-indigo-600 font-medium">About</Link>
-          <Link to="/features" className="text-gray-700 hover:text-indigo-600 font-medium">Features</Link>
           <Link
             to="/login"
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 font-medium"
@@ -53,7 +52,6 @@ const Navbar = () => {
         <div className="md:hidden flex flex-col mt-4 space-y-2">
           <Link to="/" className="text-gray-700 hover:text-indigo-600 font-medium">Home</Link>
           <Link to="/about" className="text-gray-700 hover:text-indigo-600 font-medium">About</Link>
-          <Link to="/features" className="text-gray-700 hover:text-indigo-600 font-medium">Features</Link>
           <Link
             to="/login"
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 font-medium text-center"

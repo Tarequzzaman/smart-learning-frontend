@@ -20,6 +20,7 @@ import UserProfile from './components/UserDashboardMyAccount';
 import CourseDetailsPage from './pages/user/CourseDetailsPage';
 import QuizPage from './pages/user/QuizPage';
 import ExploreTopics from './pages/ExploreTopics';
+import AboutUs from './pages/AboutUs';
 
 const App = () => {
   const userRole = localStorage.getItem('role'); // "admin" | "user" | null
@@ -36,6 +37,8 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-code" element={<VerifyCode />} />
+        <Route path="/about" element={<AboutUs />} />
+
       </Route>
       <Route
         path="/admin"
