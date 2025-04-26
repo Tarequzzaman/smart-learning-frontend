@@ -1,4 +1,4 @@
-const API_URL = "http://0.0.0.0:8004";
+const API_URL = "http://127.0.0.1:8004";
 
 export const getUsers = async () => {
   const token = localStorage.getItem("access_token");
