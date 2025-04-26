@@ -6,8 +6,7 @@ const TopicSelectionPage = () => {
   const navigate = useNavigate();
 
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-    const [dropdownVisible , setDropdownVisible] = useState(false);
-  
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const handleTopicSelect = (topic) => {
     setSelectedTopics((prevSelected) =>
@@ -22,18 +21,21 @@ const TopicSelectionPage = () => {
     navigate("/learning-feed");
   };
 
-  const handleUserButtonClick = ()=> {
-    setDropdownVisible(!dropdownVisible)
-
-  }
+  const handleUserButtonClick = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
 
   const handleMyAccountClick = () => {
-    navigate('/my-account')
-  }
+    navigate("/my-account");
+  };
 
   const handleLogOutClick = () => {
-    navigate('/signin')
-  }
+    navigate("/signin");
+  };
+
+  const handleOngoingClick = () => {
+    navigate("/course-details");
+  };
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen p-6">
       {/* Header Section */}
@@ -44,32 +46,43 @@ const TopicSelectionPage = () => {
         <h1 className="text-3xl font-semibold text-gray-900">
           Select your topics
         </h1>
-       <button onClick={handleUserButtonClick} className="text-2xl text-gray-700">
-                 <FaUserCircle />
-               </button>
-               {/* Dropdown Menu */}
-               {dropdownVisible && (
-                   <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-                     <ul className="space-y-2 p-3">
-                       <li>
-                         <button
-                         onClick={handleMyAccountClick}
-                           className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
-                         >
-                           My Account
-                         </button>
-                       </li>
-                       <li>
-                         <button
-                         onClick={handleLogOutClick}
-                           className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
-                         >
-                           Log Out
-                         </button>
-                       </li>
-                     </ul>
-                   </div>
-                 )}
+        <button
+          onClick={handleUserButtonClick}
+          className="text-2xl text-gray-700"
+        >
+          <FaUserCircle />
+        </button>
+        {/* Dropdown Menu */}
+        {dropdownVisible && (
+          <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+            <ul className="space-y-2 p-3">
+              <li>
+                <button
+                  onClick={handleMyAccountClick}
+                  className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
+                >
+                  My Account
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={handleOngoingClick}
+                  className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
+                >
+                  Ongoing
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={handleLogOutClick}
+                  className="w-full text-left text-gray-700 hover:bg-gray-200 px-4 py-2 rounded"
+                >
+                  Log Out
+                </button>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Topic Selection Buttons */}
