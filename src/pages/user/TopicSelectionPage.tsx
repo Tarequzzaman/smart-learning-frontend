@@ -18,7 +18,7 @@ const TopicSelectionPage = () => {
 
   const handleContinue = () => {
     console.log("Selected topics:", selectedTopics);
-    navigate("/learning-feed");
+    navigate("/dashboard/learning-feed");
   };
 
   const handleUserButtonClick = () => {
@@ -26,15 +26,15 @@ const TopicSelectionPage = () => {
   };
 
   const handleMyAccountClick = () => {
-    navigate("/my-account");
+    navigate("/dashboard/my-account");
   };
 
   const handleLogOutClick = () => {
-    navigate("/signin");
+    navigate("/dashboard/signin");
   };
 
   const handleOngoingClick = () => {
-    navigate("/course-details");
+    navigate("/dashboard/course-details");
   };
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen p-6">

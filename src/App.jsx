@@ -21,6 +21,8 @@ import CourseDetailsPage from './pages/user/CourseDetailsPage';
 import QuizPage from './pages/user/QuizPage';
 import ExploreTopics from './pages/ExploreTopics';
 import AboutUs from './pages/AboutUs';
+import UserLayout from './layouts/UserLayout'; // user navigation
+
 
 const App = () => {
   const userRole = localStorage.getItem('role'); // "admin" | "user" | null
@@ -40,6 +42,7 @@ const App = () => {
         <Route path="/about" element={<AboutUs />} />
 
       </Route>
+
       <Route
         path="/admin"
         element={userRole === 'admin' ? <AdminLayout /> : <Navigate to="/login" replace />}
@@ -49,15 +52,17 @@ const App = () => {
         <Route path="topics" element={<Topics />} />
       </Route>
 
-      <Route path="/dashboard/home" element={<DashboardHome />} />
-      <Route path="/topic-selection" element={<TopicSelectionPage />} />
-      <Route path="/learning-feed" element={<LearningFeedPage />} />
-      <Route path="/course-details" element={<CourseDetailsPage />} />
-      <Route path="/quiz" element={<QuizPage />} />
-
-
-
-      <Route path="/my-account" element={<UserProfile />} />
+      <Route
+        path="/dashboard"
+        element={userRole === 'user' ? <UserLayout /> : <Navigate to="/login" replace />}
+      >
+        <Route index element={<DashboardHome />} /> 
+        <Route path="topic-selection" element={<TopicSelectionPage />} />
+        <Route path="learning-feed" element={<LearningFeedPage />} />
+        <Route path="course-details" element={<CourseDetailsPage />} />
+        <Route path="quiz" element={<QuizPage />} />
+        <Route path="my-account" element={<UserProfile />} />
+      </Route>
 
 
      

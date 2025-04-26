@@ -15,7 +15,7 @@ const CourseDetailsPage = () => {
   };
 
   const handleTakeQuiz = () => {
-    navigate("/quiz");
+    navigate("/dashboard/quiz");
   };
 
   const handleNextChapter = () => {
@@ -28,7 +28,7 @@ const CourseDetailsPage = () => {
   };
 
   const handleMyAccountClick = () => {
-    navigate("/my-account");
+    navigate("/dashboard/my-account");
   };
 
   const handleLogOutClick = () => {
