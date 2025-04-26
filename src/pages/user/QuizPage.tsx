@@ -86,15 +86,15 @@ const QuizPage = () => {
   };
 
   const handleMyAccountClick = () => {
-    navigate("/my-account");
+    navigate("/dashboard/my-account");
   };
 
   const handleLogOutClick = () => {
-    navigate("/signin");
+    navigate("signin");
   };
 
   const handleOngoingClick = () => {
-    navigate("/course-details");
+    navigate("/dashboard/course-details");
   };
 
   return (
