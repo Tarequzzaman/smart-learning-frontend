@@ -15,15 +15,15 @@ const LearningFeedPage = () => {
   };
 
   const handleMyAccountClick = () => {
-    navigate("/my-account");
+    navigate("/dashboard/my-account");
   };
 
   const handleLogOutClick = () => {
-    navigate("/signin");
+    navigate("/dashboard/signin");
   };
 
   const handleOngoingClick = () => {
-    navigate("/course-details");
+    navigate("/dashboard/course-details");
   };
 
   return (
@@ -86,7 +86,7 @@ const LearningFeedPage = () => {
           <ul className="list-disc pl-6 space-y-2">
             <li>
               <a
-                href="/course-details"
+                href="/dashboard/course-details"
                 className="text-blue-500 hover:underline"
               >
                 Introduction to programming
