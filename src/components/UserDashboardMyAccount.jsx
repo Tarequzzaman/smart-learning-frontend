@@ -1,227 +1,182 @@
 import React, { useState } from "react";
-import UserDashboardLayout from "./UserDashboardLayout";
-import OTPInput from "./InputOtp";
 import { useNavigate } from "react-router-dom";
+import OTPInput from "./InputOtp";
+
 const UserProfile = () => {
   const navigate = useNavigate();
 
-  const [photo, setPhoto] = useState(null); // State for profile photo
-  const [name, setName] = useState("John Marpung"); // Placeholder for user name
-  const [email, setEmail] = useState("john@gmail.com"); // Placeholder email
-  const [phone, setPhone] = useState("(+1) (634) 555-0102"); // Placeholder phone number
-  const [dob, setDob] = useState("1999/04/12"); // Placeholder date of birth
+  const [name, setName] = useState("John Marpung");
+  const [email, setEmail] = useState("john@gmail.com");
+  const [originalEmail, setOriginalEmail] = useState("john@gmail.com");
+  const [currentPassword] = useState("********");
 
-  // Password change states
-  const [currentPassword, setCurrentPassword] = useState("********");
-  const [isOtpVisible, setIsOtpVisible] = useState(false); // State for showing OTP form
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]); // State for OTP input
+  const [isOtpVisible, setIsOtpVisible] = useState(false);
+  const [isEmailVerificationVisible, setIsEmailVerificationVisible] =
+    useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
-  // Handle file upload
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhoto(reader.result); // Save the base64 image URL to state
-      };
-      reader.readAsDataURL(file);
+  const handleCancel = () => {
+    navigate(-1);
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    if (email !== originalEmail) {
+      setIsEmailVerificationVisible(true);
+    } else {
+      navigate(-1);
     }
   };
 
-  const handleCancel = ()=> {
-    navigate(-1);
-
-  }
-
   return (
-      <div className="mx-auto p-6 bg-white rounded-lg shadow-md max-w-[800px]">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Personal Info</h2>
-            <p className="text-gray-400 mb-4 text-sm">
-              Update your profile information and preferences.
-            </p>
-          </div>
+    <div className="flex min-h-screen justify-center items-center bg-white px-6">
+      <div className="flex flex-col md:flex-row items-center max-w-6xl w-full gap-20">
+        {/* Left Section - Welcome Text */}
+        <div className="hidden md:flex flex-col items-center justify-center flex-1 text-center">
+          <h1 className="text-indigo-700 text-5xl font-extrabold mb-4">
+            Hi, {name.split(" ")[0]} 👋
+          </h1>
+          <p className="text-gray-500 max-w-sm">
+            Keep your profile updated. Change your email or password securely.
+          </p>
+        </div>
 
-          <div>
-            {/* Save/Cancel Buttons */}
-            <div className="flex justify-end space-x-4">
+        {/* Right Section - Profile Form */}
+        <div className="w-full max-w-lg p-10 bg-white rounded-lg shadow-lg">
+          {/* No Edit Profile heading here */}
+          <form onSubmit={handleSave} className="space-y-6">
+            {/* Full Name */}
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-between">
               <button
-              onClick={handleCancel}
                 type="button"
-                className="px-6 py-2 bg-white text-gray-400 border border-gray-300 rounded-md cursor-pointer"
+                onClick={handleCancel}
+                className="px-6 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
               >
                 Cancel
               </button>
               <button
-                onClick={handleCancel}
-
                 type="submit"
-                className="px-6 py-2 bg-primary text-white font-medium rounded-md cursor-pointer hover:bg-blue-800 transition duration-200"
+                className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
               >
                 Save
               </button>
             </div>
-          </div>
-        </div>
+          </form>
 
-        <hr className="text-gray-200 mb-6" />
-        <form>
-          {/* Photo Upload */}
-          <div className="flex items-center mb-6">
-            <label
-              htmlFor="photo"
-              className="block text-sm font-semibold text-gray-400 w-40"
-            >
-              Profile Photo
-            </label>
-            <div className="w-16 h-16 rounded-full overflow-hidden mr-6">
-              {photo ? (
-                <img
-                  src={photo}
-                  alt="User"
-                  className="w-full h-full object-cover"
+          {/* Change Password Section */}
+          <div className="mt-10">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Change Password
+            </h3>
+            <div className="bg-gray-50 p-6 rounded-md">
+              <div className="mb-4">
+                <label
+                  htmlFor="currentPassword"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Current Password
+                </label>
+                <input
+                  id="currentPassword"
+                  type="password"
+                  value={currentPassword}
+                  disabled
+                  className="w-full p-3 border border-gray-300 rounded bg-gray-100"
                 />
-              ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-xl text-gray-600">+ Upload</span>
-                </div>
-              )}
-            </div>
-            <label className="cursor-pointer text-blue-500">
-              Upload Image
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="hidden"
-              />
-            </label>
-          </div>
-
-          {/* Full Name */}
-          <div className="flex items-center mb-4">
-            <label
-              htmlFor="name"
-              className="block text-sm font-semibold text-gray-400 w-40"
-            >
-              Full name
-            </label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="flex items-center mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-semibold text-gray-400 w-40"
-            >
-              Email
-            </label>
-            <input
-              disabled
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 rounded-md border bg-gray-100  border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-
-          {/* Phone Number */}
-          <div className="flex items-center mb-4">
-            <label
-              htmlFor="phone"
-              className="block text-sm font-semibold text-gray-400 w-40"
-            >
-              Phone number
-            </label>
-            <input
-              id="phone"
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-
-          {/* Date of Birth */}
-          <div className="flex items-center mb-4">
-            <label
-              htmlFor="dob"
-              className="block text-sm font-semibold text-gray-400 w-40"
-            >
-              Date of birth
-            </label>
-            <input
-              id="dob"
-              type="date"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              className="w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-        </form>
-
-        {/* Change Password Section */}
-        <div className="mt-8">
-          <h3 className="text-2xl font-bold mb-4">Change Password</h3>
-          <div className="mb-4">
-            <label
-              htmlFor="currentPassword"
-              className="block text-sm font-semibold text-gray-400"
-            >
-              Current Password
-            </label>
-            <input
-              id="currentPassword"
-              type="password"
-              value={currentPassword}
-              disabled
-              className="w-full p-3 rounded-md border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsOtpVisible(true)} // Enable OTP input on click
-            className="px-6 py-2 bg-primary text-white font-medium rounded-md cursor-pointer hover:bg-blue-700"
-          >
-            Change Password
-          </button>
-
-          {/* OTP Modal */}
-          {isOtpVisible && (
-            <div className="fixed inset-0 flex justify-center items-center bg-secondary bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-xl">
-                <form>
-                  <OTPInput otp={otp} setOtp={setOtp} />
-                  <button
-                    type="submit"
-                    className="w-full py-2 bg-primary text-white rounded-lg font-bold"
-                  >
-                    Verify OTP
-                  </button>
-
-                  {/* Resend Text */}
-                  <div className="text-center mt-4">
-                    <p className="text-gray-600 text-sm">
-                      Didn't receive an email?{" "}
-                      <button className="text-primary font-bold">Resend</button>
-                    </p>
-                  </div>
-                </form>
               </div>
+              <button
+                type="button"
+                onClick={() => setIsOtpVisible(true)}
+                className="w-full py-3 bg-purple-500 text-white font-semibold rounded hover:bg-purple-600 transition"
+              >
+                Change Password
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
+
+      {/* OTP Modal */}
+      {isOtpVisible && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-2xl w-80 relative">
+            <button
+              onClick={() => setIsOtpVisible(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+            <h4 className="text-xl font-bold mb-4 text-center">Enter OTP</h4>
+            <OTPInput otp={otp} setOtp={setOtp} />
+            <button className="w-full mt-6 py-2 bg-indigo-600 text-white font-bold rounded hover:bg-indigo-700 transition">
+              Verify OTP
+            </button>
+            <p className="text-center text-gray-500 text-sm mt-4">
+              Didn't receive an email?{" "}
+              <button className="text-indigo-600 font-semibold">Resend</button>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Email Verification Modal */}
+      {isEmailVerificationVisible && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-2xl w-80 relative">
+            <button
+              onClick={() => setIsEmailVerificationVisible(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+            <h4 className="text-xl font-bold mb-4 text-center">
+              Verify Your New Email
+            </h4>
+            <p className="text-gray-500 text-sm mb-6 text-center">
+              We sent a code to {email}. Please check your inbox.
+            </p>
+            <OTPInput otp={otp} setOtp={setOtp} />
+            <button className="w-full mt-6 py-2 bg-green-500 text-white font-bold rounded hover:bg-green-600 transition">
+              Verify Email
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
