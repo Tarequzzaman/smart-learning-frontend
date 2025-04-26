@@ -27,7 +27,8 @@ const Login = () => {
         localStorage.setItem("role", "admin");
         window.location.href = "/admin";
       } else {
-        navigate("/topic-selection");
+        localStorage.setItem("role", "user");
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       alert(`Login failed: ${error.message}`);
