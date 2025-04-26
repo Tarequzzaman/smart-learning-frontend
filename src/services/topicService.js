@@ -1,9 +1,7 @@
-
-const API_URL = "http://0.0.0.0:8004";
+const API_URL = "http://127.0.0.1:8004";
 
 export const getTopics = async () => {
   const token = localStorage.getItem("access_token");
-
 
   const response = await fetch(`${API_URL}/topics`, {
     headers: {
@@ -23,56 +21,54 @@ export const getTopics = async () => {
     title: topic.title,
     description: topic.description,
     createdBy: `${topic.creator.first_name} ${topic.creator.last_name}`,
-    createdAt: new Date().toISOString().split("T")[0], 
+    createdAt: new Date().toISOString().split("T")[0],
   }));
 };
 
-  
- export const createTopic = async (topicData) => {
-   const token = localStorage.getItem("access_token");
-   const userString = localStorage.getItem("user");
- 
-   if (!token || !userString) {
-     throw new Error("Missing user or token. Please log in again.");
-   }
- 
-   const user = JSON.parse(userString);
- 
-   const response = await fetch(`${API_URL}/topics`, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       Authorization: `Bearer ${token}`,
-     },
-     body: JSON.stringify(topicData),
-   });
- 
-   if (!response.ok) {
-     const error = await response.json();
-     throw new Error(error.detail || "Failed to create topic");
-   }
- 
-   const created = await response.json();
-  
-   console.log({
+export const createTopic = async (topicData) => {
+  const token = localStorage.getItem("access_token");
+  const userString = localStorage.getItem("user");
+
+  if (!token || !userString) {
+    throw new Error("Missing user or token. Please log in again.");
+  }
+
+  const user = JSON.parse(userString);
+
+  const response = await fetch(`${API_URL}/topics`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(topicData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Failed to create topic");
+  }
+
+  const created = await response.json();
+
+  console.log({
     id: created.id,
     title: created.title,
     description: created.description,
-    createdBy: `${user.first_name} ${user.last_name}`, 
+    createdBy: `${user.first_name} ${user.last_name}`,
     createdAt: new Date().toISOString().split("T")[0],
   });
 
-   return {
-     id: created.id,
-     title: created.title,
-     description: created.description,
-     createdBy: `${user.first_name} ${user.last_name}`, 
-     createdAt: new Date().toISOString().split("T")[0],
-   };
- };
+  return {
+    id: created.id,
+    title: created.title,
+    description: created.description,
+    createdBy: `${user.first_name} ${user.last_name}`,
+    createdAt: new Date().toISOString().split("T")[0],
+  };
+};
 
-
- export const updateTopic = async (id, topicData) => {
+export const updateTopic = async (id, topicData) => {
   const token = localStorage.getItem("access_token");
   const userString = localStorage.getItem("user");
 
@@ -107,7 +103,6 @@ export const getTopics = async () => {
   };
 };
 
-
 export const deleteTopic = async (id) => {
   const token = localStorage.getItem("access_token");
 
@@ -127,12 +122,3 @@ export const deleteTopic = async (id) => {
     throw new Error(error.detail || "Failed to delete topic");
   }
 };
-
-
- 
-
-  
-
-
-
-  
