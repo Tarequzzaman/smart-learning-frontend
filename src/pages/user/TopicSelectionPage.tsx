@@ -31,7 +31,7 @@ const TopicSelectionPage = () => {
   }, []);
 
 
-  };
+  
 
   const handleTopicClick = (topicId: number) => {
     setSelectedTopics((prevSelected) => {
