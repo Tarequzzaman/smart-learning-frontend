@@ -30,8 +30,15 @@ const TopicSelectionPage = () => {
     fetchTopics();
   }, []);
 
-
-  
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 280 * 3;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const handleTopicClick = (topicId: number) => {
     setSelectedTopics((prevSelected) => {
@@ -42,6 +49,13 @@ const TopicSelectionPage = () => {
       }
     });
   };
+
+  const handleContinue = () => {
+    console.log("Selected Topics:", selectedTopics);
+    navigate("/learning-feed");
+  };
+
+  const isSelected = (topicId: number) => selectedTopics.includes(topicId);
 
   return (
     <main className="bg-white min-h-screen text-gray-800 p-6">
