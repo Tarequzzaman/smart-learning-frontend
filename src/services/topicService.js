@@ -123,3 +123,10 @@ export const deleteTopic = async (id) => {
     throw new Error(error.detail || "Failed to delete topic");
   }
 };
+
+
+
+export const hasUserGivenInterests = async () => {
+  // Simulate 50% random true/false
+  return Math.random() < 0.5;
+};
