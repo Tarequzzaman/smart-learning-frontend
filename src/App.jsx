@@ -22,6 +22,7 @@ import QuizPage from './pages/user/QuizPage';
 import ExploreTopics from './pages/ExploreTopics';
 import AboutUs from './pages/AboutUs';
 import UserLayout from './layouts/UserLayout'; // user navigation
+import CompletedCourses from './pages/user/completedCourse';
 
 
 const App = () => {
@@ -62,6 +63,7 @@ const App = () => {
         <Route path="course-details" element={<CourseDetailsPage />} />
         <Route path="quiz" element={<QuizPage />} />
         <Route path="my-account" element={<UserProfile />} />
+        <Route path="completed-courses" element={<CompletedCourses />} /> 
       </Route>
 
 
