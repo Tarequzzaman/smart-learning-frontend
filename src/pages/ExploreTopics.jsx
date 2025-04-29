@@ -36,7 +36,7 @@ const ExploreTopics = () => {
     <main className="bg-white text-gray-800">
       {/* Header */}
       <section className="text-center py-20 bg-indigo-50 mb-12 rounded-lg">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-indigo-700">Explore Topics</h1>
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-indigo-700">Explore Your Personalized Learning Topics</h1>
         <p className="text-lg md:text-xl mb-6 max-w-2xl mx-auto text-gray-600">
           Discover personalized learning paths and start mastering new skills today.
         </p>

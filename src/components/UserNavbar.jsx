@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
 
 const UserNavbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Mobile menu
+  const [profileOpen, setProfileOpen] = useState(false); // Profile dropdown
   const navigate = useNavigate();
+  const profileRef = useRef(); // Reference to profile wrapper
 
   const user = JSON.parse(localStorage.getItem('user'));
   const userFullName = user ? `${user.first_name} ${user.last_name}` : "User";
@@ -15,37 +18,73 @@ const UserNavbar = () => {
     navigate("/login");
   };
 
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <nav className="bg-white shadow-md px-6 py-4 sticky top-0 z-50">
       <div className="w-full flex justify-between items-center">
-        {/* Logo on far left */}
+        {/* Logo */}
         <Link to="/dashboard" className="text-2xl font-bold text-indigo-600">
           Smart Learning Companion
         </Link>
 
-        {/* Desktop Menu aligned right */}
-        <div className="hidden md:flex space-x-6 items-center ml-auto">
-          <Link to="/dashboard/topic-selection" className="text-gray-700 hover:text-indigo-600 font-medium">
-            Selected Topics
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-6 items-center ml-auto relative">
+          {/* Completed Courses */}
+          <Link to="/dashboard/completed-courses" className="text-gray-700 hover:text-indigo-600 font-medium">
+            Completed Courses
           </Link>
-          <Link to="/dashboard/learning-feed" className="text-gray-700 hover:text-indigo-600 font-medium">
-            My Feed
-          </Link>
-          <button
-            onClick={() => navigate("/dashboard/my-account")}
-            className="text-gray-700 hover:text-indigo-600 font-medium"
-          >
-            {userFullName}
-          </button>
-          <button
-            onClick={handleLogout}
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 font-medium"
-          >
-            Logout
-          </button>
+
+          {/* Profile and Dropdown */}
+          <div ref={profileRef} className="relative">
+            {/* Profile Button */}
+            <button
+              onClick={() => setProfileOpen((prev) => !prev)} // Toggle open/close on click
+              className="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 font-medium"
+            >
+              <FaUserCircle className="text-2xl" />
+              <span>{userFullName}</span>
+            </button>
+
+            {/* Dropdown */}
+            {profileOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50">
+                <button
+                  onClick={() => { setProfileOpen(false); navigate("/dashboard/my-account"); }}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  Edit Profile
+                </button>
+                <button
+                  onClick={() => { setProfileOpen(false); navigate("/dashboard/topic-selection"); }}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                  Edit Personalized Learning
+                </button>
+                <div className="border-t my-1"></div> {/* Divider */}
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 font-semibold"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Hamburger Menu (Mobile) */}
+        {/* Mobile Hamburger */}
         <div className="md:hidden ml-auto">
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -71,18 +110,21 @@ const UserNavbar = () => {
       {/* Mobile Dropdown */}
       {isOpen && (
         <div className="md:hidden flex flex-col mt-4 space-y-2">
-          <Link to="/dashboard/topic-selection" className="text-gray-700 hover:text-indigo-600 font-medium">
-            Selected Topics
+          {/* Completed Courses for Mobile */}
+          <Link to="/dashboard/completed-courses" className="text-gray-700 hover:text-indigo-600 font-medium">
+            Completed Courses
           </Link>
-          <Link to="/dashboard/learning-feed" className="text-gray-700 hover:text-indigo-600 font-medium">
-            My Feed
-          </Link>
+
+          {/* Profile (Mobile) */}
           <button
             onClick={() => navigate("/dashboard/my-account")}
-            className="text-gray-700 hover:text-indigo-600 font-medium text-left"
+            className="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 font-medium text-left"
           >
-            {userFullName}
+            <FaUserCircle className="text-2xl" />
+            <span>{userFullName}</span>
           </button>
+
+          {/* Logout (Mobile) */}
           <button
             onClick={handleLogout}
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 font-medium text-center"
