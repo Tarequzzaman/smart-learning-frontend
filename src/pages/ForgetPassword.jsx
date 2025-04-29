@@ -2,17 +2,46 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { BiKey } from 'react-icons/bi';
+import { sendResetPasswordCode } from '../services/userProfileService';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);  // success or error message
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Sending code to:', email);
-    navigate('/verify-code', { state: { email } });
-  };
+    setLoading(true);
+    setMessage(null);
+    setError(null);
 
+    try {
+      const response = await sendResetPasswordCode(email);
+      console.log('Reset code sent:', response);
+
+      // ✅ Show success message
+      setMessage(response.message || 'Reset code sent successfully.');
+
+      // ✅ Save email for next page
+      localStorage.setItem('reset_email', email);
+
+      setTimeout(() => {
+        navigate('/verify-code', { state: { email } });
+      });
+
+    } catch (err) {
+      console.error('Failed to send reset code:', err);
+      if (err.detail) {
+        setError(err.detail);
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen flex flex-col items-center pt-12 bg-white px-4">
       <div className="w-full max-w-md p-8 rounded text-center">
