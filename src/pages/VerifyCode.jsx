@@ -1,39 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { HiOutlineMail } from 'react-icons/hi';
+import {verifyResetPasswordCode, sendResetPasswordCode}  from  '../services/userProfileService';
+
 
 const VerifyCode = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email || '';
+  const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const storedEmail = localStorage.getItem('reset_email');
+    setEmail(location.state?.email || storedEmail || '');
+  }, [location.state]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setMessage(null);
 
     if (code.length !== 6 || !/^\d{6}$/.test(code)) {
-      alert('Please enter a valid 6-digit code.');
+      setError('Please enter a valid 6-digit code.');
       return;
     }
 
-    console.log('Verification code entered:', code);
-    setTimeout(() => {
-      navigate('/reset-password');
-    }, 1000);
+    setLoading(true);
+
+    try {
+      const response = await verifyResetPasswordCode(email, code);
+      setMessage(response.message || "Code verified successfully.");
+
+      // Navigate after short success message
+      setTimeout(() => {
+        navigate('/reset-password', { state: { email } });
+      }, 1000);
+
+    } catch (err) {
+      console.error('Failed to verify code:', err);
+      setError(err.message || "Failed to verify code.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
     if (!email) {
-      alert('No email found to resend code.');
+      setError('No email found to resend code.');
       return;
     }
-
-    console.log('Resending code to:', email);
-    alert(`A new verification code has been sent to: ${email}`);
+  
+    setError(null);
+    setMessage(null);
+    setLoading(true);
+  
+    try {
+      const response = await sendResetPasswordCode(email);
+      setMessage(response.message || `A new verification code has been sent to: ${email}`);
+    } catch (err) {
+      console.error('Failed to resend code:', err);
+      setError(err.message || "Failed to resend code.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center pt-24 bg-white px-4">
+    <div className="min-h-screen flex flex-col items-center pt-24 bg-white px-4 relative">
       {/* Icon */}
       <div className="bg-indigo-100 text-indigo-600 p-3 rounded-full mb-4">
         <HiOutlineMail size={28} />
@@ -44,6 +80,22 @@ const VerifyCode = () => {
       <p className="text-gray-600 mb-8 text-center">
         Enter the 6-digit code sent to <strong>{email}</strong>.
       </p>
+
+      {/* Error popup */}
+      {error && (
+        <div className="absolute top-2 right-2 bg-red-100 text-red-600 p-4 rounded-lg shadow-lg flex items-center space-x-2">
+          <span className="text-2xl">😔</span>
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
+
+      {/* Success popup */}
+      {message && (
+        <div className="absolute top-2 right-2 bg-green-100 text-green-600 p-4 rounded-lg shadow-lg flex items-center space-x-2">
+          <span className="text-2xl">🎉</span>
+          <p className="text-sm font-medium">{message}</p>
+        </div>
+      )}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
@@ -63,9 +115,10 @@ const VerifyCode = () => {
 
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition"
         >
-          Verify Code
+          {loading ? 'Verifying...' : 'Verify Code'}
         </button>
       </form>
 
