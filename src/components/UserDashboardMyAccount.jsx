@@ -5,8 +5,8 @@ import OTPInput from "./InputOtp";
 const UserProfile = () => {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("John Marpung");
-  const [email, setEmail] = useState("john@gmail.com");
+  const [name, setName] = useState("Tharindu jayasinghe");
+  const [email, setEmail] = useState("tharindujayasinghe@gmail.com");
   const [originalEmail, setOriginalEmail] = useState("john@gmail.com");
   const [currentPassword] = useState("********");
 
@@ -74,8 +74,8 @@ const UserProfile = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                readOnly
+                className="w-full p-3 border border-gray-300 rounded bg-gray-100"
               />
             </div>
 
