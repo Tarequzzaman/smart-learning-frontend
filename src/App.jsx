@@ -16,13 +16,13 @@ import Topics from './pages/admin/Topics';
 import DashboardHome from './pages/user/UserDashboardHome';
 import TopicSelectionPage from './pages/user/TopicSelectionPage';
 import LearningFeedPage from './pages/user/LearningFeedPage';
-import UserProfile from './components/UserDashboardMyAccount';
 import CourseDetailsPage from './pages/user/CourseDetailsPage';
 import QuizPage from './pages/user/QuizPage';
 import ExploreTopics from './pages/ExploreTopics';
 import AboutUs from './pages/AboutUs';
 import UserLayout from './layouts/UserLayout'; // user navigation
 import CompletedCourses from './pages/user/completedCourse';
+import UserProfile from './pages/user/UserDashboardMyAccount';
 
 
 const App = () => {
