@@ -70,6 +70,12 @@ const Quiz = () => {
             <p className="text-lg text-gray-700 mb-6">
               You answered all questions correctly and completed the course!
             </p>
+            <button
+              className="bg-indigo-700 text-white py-2 px-6 rounded-full font-medium hover:bg-indigo-800 transition"
+              onClick={() => navigate("/dashboard")}
+            >
+              Go to Dashboard
+            </button>
           </>
         ) : (
           <>
@@ -79,20 +85,20 @@ const Quiz = () => {
             <p className="text-lg text-gray-700 mb-6">
               You missed some questions. Would you like to retry?
             </p>
+            <button
+              className="bg-indigo-700 text-white py-2 px-6 rounded-full font-medium hover:bg-indigo-800 transition mb-4"
+              onClick={() => window.location.reload()}
+            >
+              Retry Quiz
+            </button>
+            <button
+              className="bg-gray-300 text-gray-800 py-2 px-6 rounded-full font-medium hover:bg-gray-400 transition"
+              onClick={() => navigate("/dashboard/learning-feed")}
+            >
+              Back to Learning feed
+            </button>
           </>
         )}
-        <button
-          className="bg-indigo-700 text-white py-2 px-6 rounded-full font-medium hover:bg-indigo-800 transition mb-4"
-          onClick={() => window.location.reload()}
-        >
-          Retry Quiz
-        </button>
-        <button
-          className="bg-gray-300 text-gray-800 py-2 px-6 rounded-full font-medium hover:bg-gray-400 transition"
-          onClick={() => navigate("/explore")}
-        >
-          Back to Explore
-        </button>
       </main>
     );
   }
