@@ -45,7 +45,7 @@ const TopicSelectionPage = () => {
 
   const handleContinue = () => {
     console.log("Selected Topics:", selectedTopics);
-    navigate("/learning-feed");
+    navigate("/dashboard");
   };
 
   const isSelected = (topicId) => selectedTopics.includes(topicId);
