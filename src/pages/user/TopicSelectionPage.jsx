@@ -51,7 +51,7 @@ const TopicSelectionPage = () => {
   const isSelected = (topicId) => selectedTopics.includes(topicId);
 
   return (
-    <main className="bg-white min-h-screen text-gray-800 p-6">
+    <main className="bg-white min-h-screen text-gray-800">
       {/* Header */}
       <section className="text-center py-20 bg-indigo-50 mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-indigo-700">

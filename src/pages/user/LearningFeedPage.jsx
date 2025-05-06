@@ -228,21 +228,22 @@ const LearningFeedPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-72 bg-white shadow-md p-6 flex flex-col fixed top-0 left-0 bottom-0">
-        <div className="mb-6">
+      <div className="w-72 bg-white shadow-md p-6 flex flex-col fixed top-0 left-0 h-screen  ">
+        <div className="w-full bg-gray-200 rounded-full h-3 mt-12">
+          <div
+            className="bg-purple-500 h-3 rounded-full"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
+
+        <div className="">
           <p className="text-gray-700 mb-2 font-semibold">
             {progressPercentage}% completed
           </p>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div
-              className="bg-purple-500 h-3 rounded-full"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
-          </div>
         </div>
 
         <div className="flex flex-col gap-4">
-          <h3 className="text-lg font-bold mb-2">Python Basics</h3>
+          <h3 className="text-lg font-bold mt-4 ">Python Basics</h3>
           <ul className="space-y-3">
             {sections.map((section, index) => (
               <li key={index}>
