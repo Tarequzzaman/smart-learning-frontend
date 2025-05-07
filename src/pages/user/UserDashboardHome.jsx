@@ -1,23 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTopics, hasUserGivenInterests } from "../../services/topicService"; // Make sure correct path
+import { getTopics, hasUserGivenInterests } from "../../services/topicService";
+import { getRecommendedCourses } from "../../services/courseService";
 
 const DashboardHome = () => {
   const navigate = useNavigate();
-  const myLearningRef = useRef(null);
-  const recommendedRef = useRef(null);
+  const myCoursesRef = useRef(null);
+  const recommendedCoursesRef = useRef(null);
 
   const [showInterestModal, setShowInterestModal] = useState(false);
   const [topics, setTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
-  const [myLearning, setMyLearning] = useState([]);
-  const [recommendedTopics, setRecommendedTopics] = useState([]);
-  const [hoveredML, setHoveredML] = useState(null);
-  const [hoveredRec, setHoveredRec] = useState(null);
+  const [myCourses, setMyCourses] = useState([]);
+  const [recommendedCourses, setRecommendedCourses] = useState([]);
 
   useEffect(() => {
     const checkUserInterest = async () => {
-      const interested = await hasUserGivenInterests(); // Random true/false
+      const interested = await hasUserGivenInterests(); // true/false
       if (!interested) {
         const topicsFetched = await getTopics();
         setTopics(topicsFetched);
@@ -29,7 +28,18 @@ const DashboardHome = () => {
   }, []);
 
   useEffect(() => {
-    setMyLearning([
+    const fetchCourses = async () => {
+      try {
+        const courses = await getRecommendedCourses();
+        setRecommendedCourses(courses);
+      } catch (error) {
+        console.error("Failed to fetch recommended courses:", error.message);
+      }
+    };
+
+    fetchCourses();
+
+    setMyCourses([
       {
         id: 1,
         title: "Introduction to Python",
@@ -61,37 +71,6 @@ const DashboardHome = () => {
         progress: 10,
         duration: 60,
         difficulty: "Intermediate",
-      },
-    ]);
-
-    setRecommendedTopics([
-      {
-        id: 5,
-        title: "System Design Interviews",
-        description: "Design scalable real-world systems like YouTube, Twitter, etc.",
-        duration: 70,
-        difficulty: "Advanced",
-      },
-      {
-        id: 6,
-        title: "Advanced SQL",
-        description: "Optimize SQL queries, joins, indexing, big data handling.",
-        duration: 35,
-        difficulty: "Intermediate",
-      },
-      {
-        id: 7,
-        title: "Deep Learning",
-        description: "Train CNNs, RNNs, transformers using TensorFlow and PyTorch.",
-        duration: 90,
-        difficulty: "Advanced",
-      },
-      {
-        id: 8,
-        title: "Cloud Fundamentals",
-        description: "AWS, GCP, Azure cloud basics: storage, compute, networking.",
-        duration: 50,
-        difficulty: "Beginner",
       },
     ]);
   }, []);
@@ -130,7 +109,6 @@ const DashboardHome = () => {
 
   return (
     <main className="bg-white min-h-screen text-gray-800">
-
       {/* === Interest Modal === */}
       {showInterestModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -180,20 +158,18 @@ const DashboardHome = () => {
           Your Personalized Learning Dashboard
         </h1>
         <p className="text-lg md:text-xl mb-6 max-w-2xl mx-auto text-gray-600">
-          Track your progress, explore new topics, and continue your learning journey with AI-curated content designed just for you.
+          Track your progress, explore new courses, and continue your learning journey with AI-curated content designed just for you.
         </p>
       </section>
 
       {/* === My Learning Section === */}
       <section className="relative max-w-7xl mx-auto mb-16 group">
         <h2 className="text-3xl font-bold text-indigo-700 mb-6">My Learning</h2>
-
-        {/* Hover Zones */}
         <div
-          ref={myLearningRef}
+          ref={myCoursesRef}
           className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
         >
-          {myLearning.map((course) => (
+          {myCourses.map((course) => (
             <CourseCard
               key={course.id}
               course={course}
@@ -206,22 +182,20 @@ const DashboardHome = () => {
 
       {/* === Recommended for You Section === */}
       <section className="relative max-w-7xl mx-auto mb-20 group">
-        <h2 className="text-3xl font-bold text-indigo-700 mb-6">Recommended for You</h2>
-
+        <h2 className="text-3xl font-bold text-indigo-700 mb-6">Recommended Courses</h2>
         <div
-          ref={recommendedRef}
+          ref={recommendedCoursesRef}
           className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
         >
-          {recommendedTopics.map((topic) => (
+          {recommendedCourses.map((course) => (
             <CourseCard
-              key={topic.id}
-              course={topic}
-              onClick={() => navigate('/dashboard/learning-feed', { state: { course: topic } })}
+              key={course.id}
+              course={course}
+              onClick={() => navigate('/dashboard/detail-courses', { state: { courseId: course.id } })}
             />
           ))}
         </div>
       </section>
-
     </main>
   );
 };
