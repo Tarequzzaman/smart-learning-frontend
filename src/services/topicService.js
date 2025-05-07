@@ -1,4 +1,3 @@
-
 const API_URL = "http://127.0.0.1:8004";
 
 export const getTopics = async () => {
@@ -124,9 +123,60 @@ export const deleteTopic = async (id) => {
   }
 };
 
-
-
 export const hasUserGivenInterests = async () => {
-  // Simulate 50% random true/false
-  return Math.random() < 0.5;
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("Access token not found. Please log in.");
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/users/interests`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Failed to check user interests");
+    }
+
+    const data = await response.json();
+    console.log(data.hasInterests);
+    return data.hasInterests;
+  } catch (error) {
+    console.error("Error checking user interests:", error);
+    return false;
+  }
+};
+
+export const submitUserInterest = async (selectedTopics) => {
+  console.log("Selected topics:", selectedTopics);
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("Access token not found. Please log in.");
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/users/topic-preference`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ topic_ids: selectedTopics }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to submit selected topics.");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error submitting topics:", error);
+    throw new Error("An error occurred while submitting your selected topics.");
+  }
 };

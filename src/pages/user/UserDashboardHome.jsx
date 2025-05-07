@@ -17,7 +17,7 @@ const DashboardHome = () => {
 
   useEffect(() => {
     const checkUserInterest = async () => {
-      const interested = await hasUserGivenInterests(); // Random true/false
+      const interested = await hasUserGivenInterests();
       if (!interested) {
         const topicsFetched = await getTopics();
         setTopics(topicsFetched);
@@ -33,7 +33,8 @@ const DashboardHome = () => {
       {
         id: 1,
         title: "Introduction to Python",
-        description: "Learn Python basics for automation, scripting, and data analysis.",
+        description:
+          "Learn Python basics for automation, scripting, and data analysis.",
         progress: 45,
         duration: 30,
         difficulty: "Beginner",
@@ -41,7 +42,8 @@ const DashboardHome = () => {
       {
         id: 2,
         title: "Machine Learning Fundamentals",
-        description: "Supervised learning, unsupervised learning, model evaluation metrics.",
+        description:
+          "Supervised learning, unsupervised learning, model evaluation metrics.",
         progress: 70,
         duration: 50,
         difficulty: "Intermediate",
@@ -49,7 +51,8 @@ const DashboardHome = () => {
       {
         id: 3,
         title: "React Development",
-        description: "Modern React.js development using hooks, JSX, and components.",
+        description:
+          "Modern React.js development using hooks, JSX, and components.",
         progress: 25,
         duration: 40,
         difficulty: "Intermediate",
@@ -57,7 +60,8 @@ const DashboardHome = () => {
       {
         id: 4,
         title: "Data Structures",
-        description: "Master arrays, linked lists, trees, graphs, and algorithms.",
+        description:
+          "Master arrays, linked lists, trees, graphs, and algorithms.",
         progress: 10,
         duration: 60,
         difficulty: "Intermediate",
@@ -68,28 +72,32 @@ const DashboardHome = () => {
       {
         id: 5,
         title: "System Design Interviews",
-        description: "Design scalable real-world systems like YouTube, Twitter, etc.",
+        description:
+          "Design scalable real-world systems like YouTube, Twitter, etc.",
         duration: 70,
         difficulty: "Advanced",
       },
       {
         id: 6,
         title: "Advanced SQL",
-        description: "Optimize SQL queries, joins, indexing, big data handling.",
+        description:
+          "Optimize SQL queries, joins, indexing, big data handling.",
         duration: 35,
         difficulty: "Intermediate",
       },
       {
         id: 7,
         title: "Deep Learning",
-        description: "Train CNNs, RNNs, transformers using TensorFlow and PyTorch.",
+        description:
+          "Train CNNs, RNNs, transformers using TensorFlow and PyTorch.",
         duration: 90,
         difficulty: "Advanced",
       },
       {
         id: 8,
         title: "Cloud Fundamentals",
-        description: "AWS, GCP, Azure cloud basics: storage, compute, networking.",
+        description:
+          "AWS, GCP, Azure cloud basics: storage, compute, networking.",
         duration: 50,
         difficulty: "Beginner",
       },
@@ -130,13 +138,16 @@ const DashboardHome = () => {
 
   return (
     <main className="bg-white min-h-screen text-gray-800">
-
       {/* === Interest Modal === */}
       {showInterestModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full">
-            <h2 className="text-2xl font-bold text-indigo-700 mb-4 text-center">Select Your Interests</h2>
-            <p className="text-gray-600 mb-6 text-center">Choose topics you're interested in:</p>
+            <h2 className="text-2xl font-bold text-indigo-700 mb-4 text-center">
+              Select Your Interests
+            </h2>
+            <p className="text-gray-600 mb-6 text-center">
+              Choose topics you're interested in:
+            </p>
 
             {/* Topics List */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
@@ -180,7 +191,8 @@ const DashboardHome = () => {
           Your Personalized Learning Dashboard
         </h1>
         <p className="text-lg md:text-xl mb-6 max-w-2xl mx-auto text-gray-600">
-          Track your progress, explore new topics, and continue your learning journey with AI-curated content designed just for you.
+          Track your progress, explore new topics, and continue your learning
+          journey with AI-curated content designed just for you.
         </p>
       </section>
 
@@ -198,7 +210,9 @@ const DashboardHome = () => {
               key={course.id}
               course={course}
               showProgress
-              onClick={() => navigate('/dashboard/learning-feed', { state: { course } })}
+              onClick={() =>
+                navigate("/dashboard/learning-feed", { state: { course } })
+              }
             />
           ))}
         </div>
@@ -206,7 +220,9 @@ const DashboardHome = () => {
 
       {/* === Recommended for You Section === */}
       <section className="relative max-w-7xl mx-auto mb-20 group">
-        <h2 className="text-3xl font-bold text-indigo-700 mb-6">Recommended for You</h2>
+        <h2 className="text-3xl font-bold text-indigo-700 mb-6">
+          Recommended for You
+        </h2>
 
         <div
           ref={recommendedRef}
@@ -216,12 +232,15 @@ const DashboardHome = () => {
             <CourseCard
               key={topic.id}
               course={topic}
-              onClick={() => navigate('/dashboard/learning-feed', { state: { course: topic } })}
+              onClick={() =>
+                navigate("/dashboard/learning-feed", {
+                  state: { course: topic },
+                })
+              }
             />
           ))}
         </div>
       </section>
-
     </main>
   );
 };
