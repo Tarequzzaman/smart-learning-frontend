@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTopics, hasUserGivenInterests } from "../../services/topicService"; // Make sure correct path
+import {
+  getTopics,
+  hasUserGivenInterests,
+  submitUserInterest,
+} from "../../services/topicService"; // Make sure correct path
 
 const DashboardHome = () => {
   const navigate = useNavigate();
@@ -14,6 +18,8 @@ const DashboardHome = () => {
   const [recommendedTopics, setRecommendedTopics] = useState([]);
   const [hoveredML, setHoveredML] = useState(null);
   const [hoveredRec, setHoveredRec] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   useEffect(() => {
     const checkUserInterest = async () => {
@@ -122,13 +128,22 @@ const DashboardHome = () => {
     }
   };
 
-  const handleSubmitInterest = () => {
+  const handleSubmitInterest = async () => {
     if (selectedTopics.length === 0) {
       alert("Please select at least one topic before submitting!");
       return;
     }
-    console.log("User selected topics:", selectedTopics);
-    setShowInterestModal(false);
+
+    setIsSubmitting(true);
+
+    try {
+      const data = await submitUserInterest(selectedTopics);
+      alert(`Your selected topics have been submitted: ${data.message}`);
+      setShowInterestModal(false);
+      alert(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSkip = () => {
