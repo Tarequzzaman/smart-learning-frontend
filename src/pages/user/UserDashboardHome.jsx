@@ -5,7 +5,11 @@ import {
   hasUserGivenInterests,
   submitUserInterest,
 } from "../../services/topicService";
-import { getRecommendedCourses, getMyCourses } from "../../services/courseService";
+import {
+  getRecommendedCourses,
+  getMyCourses,
+  enrollInCourse,
+} from "../../services/courseService";
 
 const DashboardHome = () => {
   const navigate = useNavigate();
@@ -35,11 +39,9 @@ const DashboardHome = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        // Fetch recommended courses
         const recommended = await getRecommendedCourses();
         setRecommendedCourses(recommended);
 
-        // Fetch my enrolled courses
         const myEnrolledCourses = await getMyCourses();
         setMyCourses(myEnrolledCourses);
       } catch (error) {
@@ -70,7 +72,6 @@ const DashboardHome = () => {
 
   const handleSubmitInterest = async () => {
     if (selectedTopics.length === 0) {
-      alert("Please select at least one topic before submitting!");
       return;
     }
 
@@ -78,7 +79,6 @@ const DashboardHome = () => {
 
     try {
       const data = await submitUserInterest(selectedTopics);
-      alert(`Your selected topics have been submitted: ${data.message}`);
       setShowInterestModal(false);
     } catch (error) {
       alert(error.message);
@@ -90,6 +90,21 @@ const DashboardHome = () => {
   const handleSkip = () => {
     console.log("User skipped selecting topics.");
     setShowInterestModal(false);
+  };
+
+  const handleEnrollAndNavigate = async (course) => {
+    try {
+      await enrollInCourse(course.id);
+
+      const myEnrolledCourses = await getMyCourses();
+      setMyCourses(myEnrolledCourses);
+
+      navigate("/dashboard/detail-courses", {
+        state: { courseId: course.id },
+      });
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -105,7 +120,6 @@ const DashboardHome = () => {
               Choose topics you're interested in:
             </p>
 
-            {/* Topics List */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
               {topics.map((topic) => (
                 <button
@@ -122,7 +136,6 @@ const DashboardHome = () => {
               ))}
             </div>
 
-            {/* Centered Buttons */}
             <div className="flex justify-center gap-4">
               <button
                 onClick={handleSkip}
@@ -171,7 +184,9 @@ const DashboardHome = () => {
                 course={course}
                 showProgress
                 onClick={() =>
-                  navigate("/dashboard/learning-feed", { state: { course } })
+                  navigate("/dashboard/detail-courses", {
+                    state: { courseId: course.id },
+                  })
                 }
               />
             ))}
@@ -198,11 +213,7 @@ const DashboardHome = () => {
               <CourseCard
                 key={course.id}
                 course={course}
-                onClick={() =>
-                  navigate("/dashboard/detail-courses", {
-                    state: { courseId: course.id },
-                  })
-                }
+                onClick={() => handleEnrollAndNavigate(course)}
               />
             ))}
           </div>

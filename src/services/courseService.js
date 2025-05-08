@@ -90,4 +90,37 @@ export const fetchCourseById = async (courseId) => {
       difficulty: course.course_level,
     }));
   };
+
+
+  export const enrollInCourse = async (courseId) => {
+    const token = localStorage.getItem("access_token");
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    if (!token) {
+      throw new Error("Access token not found. Please log in.");
+    }
+  
+    if (!user || !user.id) {
+      throw new Error("User info not found.");
+    }
+  
+    const response = await fetch(`${API_URL}/enroll`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        course_id: courseId,
+        user_id: user.id,
+      }),
+    });
+  
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Failed to enroll in course");
+    }
+  
+    return await response.json();
+  };
   
