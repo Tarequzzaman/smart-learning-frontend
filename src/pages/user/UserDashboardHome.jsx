@@ -5,7 +5,7 @@ import {
   hasUserGivenInterests,
   submitUserInterest,
 } from "../../services/topicService";
-import { getRecommendedCourses } from "../../services/courseService";
+import { getRecommendedCourses, getMyCourses } from "../../services/courseService";
 
 const DashboardHome = () => {
   const navigate = useNavigate();
@@ -18,7 +18,6 @@ const DashboardHome = () => {
   const [myCourses, setMyCourses] = useState([]);
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   useEffect(() => {
     const checkUserInterest = async () => {
@@ -36,53 +35,19 @@ const DashboardHome = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const courses = await getRecommendedCourses();
-        setRecommendedCourses(courses);
+        // Fetch recommended courses
+        const recommended = await getRecommendedCourses();
+        setRecommendedCourses(recommended);
+
+        // Fetch my enrolled courses
+        const myEnrolledCourses = await getMyCourses();
+        setMyCourses(myEnrolledCourses);
       } catch (error) {
-        console.error("Failed to fetch recommended courses:", error.message);
+        console.error("Failed to fetch courses:", error.message);
       }
     };
 
     fetchCourses();
-
-    setMyCourses([
-      {
-        id: 1,
-        title: "Introduction to Python",
-        description:
-          "Learn Python basics for automation, scripting, and data analysis.",
-        progress: 45,
-        duration: 30,
-        difficulty: "Beginner",
-      },
-      {
-        id: 2,
-        title: "Machine Learning Fundamentals",
-        description:
-          "Supervised learning, unsupervised learning, model evaluation metrics.",
-        progress: 70,
-        duration: 50,
-        difficulty: "Intermediate",
-      },
-      {
-        id: 3,
-        title: "React Development",
-        description:
-          "Modern React.js development using hooks, JSX, and components.",
-        progress: 25,
-        duration: 40,
-        difficulty: "Intermediate",
-      },
-      {
-        id: 4,
-        title: "Data Structures",
-        description:
-          "Master arrays, linked lists, trees, graphs, and algorithms.",
-        progress: 10,
-        duration: 60,
-        difficulty: "Intermediate",
-      },
-    ]);
   }, []);
 
   const scroll = (ref, direction) => {
@@ -115,6 +80,7 @@ const DashboardHome = () => {
       const data = await submitUserInterest(selectedTopics);
       alert(`Your selected topics have been submitted: ${data.message}`);
       setShowInterestModal(false);
+    } catch (error) {
       alert(error.message);
     } finally {
       setIsSubmitting(false);
@@ -168,7 +134,7 @@ const DashboardHome = () => {
                 onClick={handleSubmitInterest}
                 className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white"
               >
-                Submit Interest
+                {isSubmitting ? "Submitting..." : "Submit Interest"}
               </button>
             </div>
           </div>
@@ -189,21 +155,28 @@ const DashboardHome = () => {
       {/* === My Learning Section === */}
       <section className="relative max-w-7xl mx-auto mb-16 group">
         <h2 className="text-3xl font-bold text-indigo-700 mb-6">My Learning</h2>
-        <div
-          ref={myCoursesRef}
-          className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
-        >
-          {myCourses.map((course) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              showProgress
-              onClick={() =>
-                navigate("/dashboard/learning-feed", { state: { course } })
-              }
-            />
-          ))}
-        </div>
+
+        {myCourses.length === 0 ? (
+          <p className="text-gray-500 text-center mb-8">
+            You have not enrolled in any courses yet.
+          </p>
+        ) : (
+          <div
+            ref={myCoursesRef}
+            className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
+          >
+            {myCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                course={course}
+                showProgress
+                onClick={() =>
+                  navigate("/dashboard/learning-feed", { state: { course } })
+                }
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* === Recommended for You Section === */}
@@ -212,18 +185,28 @@ const DashboardHome = () => {
           Recommended for You
         </h2>
 
-        <div
-          ref={recommendedCoursesRef}
-          className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
-        >
-          {recommendedCourses.map((course) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              onClick={() => navigate('/dashboard/detail-courses', { state: { courseId: course.id } })}
-            />
-          ))}
-        </div>
+        {recommendedCourses.length === 0 ? (
+          <p className="text-gray-500 text-center mb-8">
+            No recommended courses available at the moment.
+          </p>
+        ) : (
+          <div
+            ref={recommendedCoursesRef}
+            className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
+          >
+            {recommendedCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                course={course}
+                onClick={() =>
+                  navigate("/dashboard/detail-courses", {
+                    state: { courseId: course.id },
+                  })
+                }
+              />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
