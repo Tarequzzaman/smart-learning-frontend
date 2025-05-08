@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTopics } from "../../services/topicService";
+import { getTopics, submitUserInterest } from "../../services/topicService";
 
 const emojis = ["🚀", "🧠", "📚", "💡", "🌟", "🧮", "💻", "🔬", "📝", "🎯"];
 
@@ -9,6 +9,7 @@ const TopicSelectionPage = () => {
   const [topics, setTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const scrollRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -43,9 +44,21 @@ const TopicSelectionPage = () => {
     });
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     console.log("Selected Topics:", selectedTopics);
-    navigate("/dashboard");
+
+    setIsSubmitting(true); // Set submitting state to true
+
+    try {
+      // Call the topic service to submit the selected topics
+      const data = await submitUserInterest(selectedTopics);
+      alert(`Your selected topics have been submitted: ${data.message}`);
+      navigate("/dashboard");
+    } catch (error) {
+      alert(error.message); // Show error message if submission fails
+    } finally {
+      setIsSubmitting(false); // Reset submitting state
+    }
   };
 
   const isSelected = (topicId) => selectedTopics.includes(topicId);
