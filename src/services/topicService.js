@@ -16,14 +16,25 @@ export const getTopics = async () => {
 
   const data = await response.json();
 
-  return data.map((topic) => ({
-    id: topic.id,
-    title: topic.title,
-    description: topic.description,
-    createdBy: `${topic.creator.first_name} ${topic.creator.last_name}`,
-    createdAt: new Date().toISOString().split("T")[0],
-  }));
+  return data.map((topic) => {
+    const totalCourses = topic.courses?.length || 0;
+    const aiGeneratedCount = topic.courses
+      ? topic.courses.filter((course) => course.is_detail_created_by_ai).length
+      : 0;
+
+    return {
+      id: topic.id,
+      title: topic.title,
+      description: topic.description,
+      createdBy: `${topic.creator.first_name} ${topic.creator.last_name}`,
+      createdAt: topic.created_at,
+      totalCourses,
+      aiGeneratedCount,
+      courses: topic.courses || [],  // ✅ Include the courses array here
+    };
+  });
 };
+
 
 export const createTopic = async (topicData) => {
   const token = localStorage.getItem("access_token");
