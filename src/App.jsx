@@ -24,7 +24,8 @@ import UserLayout from './layouts/UserLayout'; // user navigation
 import CompletedCourses from './pages/user/completedCourse';
 import UserProfile from './pages/user/UserDashboardMyAccount';
 import CourseDetail from './pages/user/MyCourse';
-
+import AllTopics from './pages/user/ExploreTopcs';
+import TopicCourses from './pages/user/TopicCourses';
 
 const App = () => {
   const userRole = localStorage.getItem('role'); // "admin" | "user" | null
@@ -66,6 +67,8 @@ const App = () => {
         <Route path="my-account" element={<UserProfile />} />
         <Route path="completed-courses" element={<CompletedCourses />} /> 
         <Route path="detail-courses" element={<CourseDetail />} /> 
+        <Route path="explore-topics" element={<AllTopics />} />
+        <Route path="topics/:id" element={<TopicCourses />} />
 
       </Route>
 

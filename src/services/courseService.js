@@ -124,3 +124,40 @@ export const fetchCourseById = async (courseId) => {
     return await response.json();
   };
   
+
+
+  export const getCoursesByTopicId = async (topicId) => {
+    const token = localStorage.getItem("access_token");
+  
+    if (!token) {
+      throw new Error("Access token not found. Please log in.");
+    }
+  
+    const response = await fetch(`${API_URL}/topics/${topicId}/courses`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Failed to fetch courses for topic");
+    }
+  
+    const data = await response.json();
+  
+    return {
+      topic: {
+        id: data.topic.id,
+        title: data.topic.title,
+        description: data.topic.description,
+      },
+      courses: data.courses.map((course) => ({
+        id: course.id,
+        title: course.course_title,
+        description: course.course_description,
+        duration: 40, // placeholder or pull from API if available
+        difficulty: course.course_level,
+      })),
+    };
+  };

@@ -158,14 +158,19 @@ const CourseDetail = () => {
             remarkPlugins={[remarkGfm]}
             components={{
               code({ node, inline, className, children, ...props }) {
-                if (inline) {
+                const isHtmlCodeTag =
+                  node?.tagName === 'code' && !inline && !className;
+
+                if (inline || isHtmlCodeTag) {
                   return (
                     <code className="bg-gray-200 rounded px-1 py-0.5 text-sm font-mono">
                       {children}
                     </code>
                   );
                 }
+
                 const language = className?.replace('language-', '') || '';
+
                 return (
                   <div className="flex justify-center my-4">
                     <div className="w-full bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">

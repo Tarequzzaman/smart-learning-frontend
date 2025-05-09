@@ -46,11 +46,16 @@ const UserNavbar = () => {
             Completed Courses
           </Link>
 
+          {/* Explore Topics */}
+          <Link to="/dashboard/explore-topics" className="text-gray-700 hover:text-indigo-600 font-medium">
+            Explore Topics
+          </Link>
+
           {/* Profile and Dropdown */}
           <div ref={profileRef} className="relative">
             {/* Profile Button */}
             <button
-              onClick={() => setProfileOpen((prev) => !prev)} // Toggle open/close on click
+              onClick={() => setProfileOpen((prev) => !prev)}
               className="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 font-medium"
             >
               <FaUserCircle className="text-2xl" />
@@ -113,6 +118,11 @@ const UserNavbar = () => {
           {/* Completed Courses for Mobile */}
           <Link to="/dashboard/completed-courses" className="text-gray-700 hover:text-indigo-600 font-medium">
             Completed Courses
+          </Link>
+
+          {/* Explore Topics for Mobile */}
+          <Link to="/dashboard/explore-topics" className="text-gray-700 hover:text-indigo-600 font-medium">
+            Explore Topics
           </Link>
 
           {/* Profile (Mobile) */}
