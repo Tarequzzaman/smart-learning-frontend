@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import OTPInput from "./InputOtp";
-import { updateUserDetails } from "../../services/userProfileService";
+import {
+  sendResetPasswordCode,
+  updateUserDetails,
+} from "../../services/userProfileService";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -14,6 +17,9 @@ const UserProfile = () => {
   const [email, setEmail] = useState(storedUser.email || "");
   const [originalEmail] = useState(storedUser.email || "");
   const [currentPassword] = useState("********");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   const [isOtpVisible, setIsOtpVisible] = useState(false);
   const [isEmailVerificationVisible, setIsEmailVerificationVisible] =
@@ -51,6 +57,33 @@ const UserProfile = () => {
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update profile. Please try again.");
+    }
+  };
+
+  const handleResetPassword = async () => {
+    setLoading(true);
+
+    try {
+      const response = await sendResetPasswordCode(email);
+      console.log("Reset code sent:", response);
+
+      setMessage(response.message || "Reset code sent successfully.");
+
+      localStorage.setItem("reset_email", email);
+
+      setTimeout(() => {
+        navigate("/verify-code", { state: { email } });
+      }, 1000);
+    } catch (err) {
+      console.error("Failed to send reset code:", err);
+
+      if (err.response && err.response.data && err.response.data.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,21 +153,10 @@ const UserProfile = () => {
             <h3 className="mb-4 text-xl font-bold text-gray-800">
               Change Password
             </h3>
-            <div className="rounded-md bg-gray-50 p-6">
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  disabled
-                  className="w-full rounded border border-gray-300 bg-gray-100 p-3"
-                />
-              </div>
+            <div className="rounded-md bg-gray-50 ">
               <button
                 type="button"
-                onClick={() => setIsOtpVisible(true)}
+                onClick={handleResetPassword}
                 className="w-full rounded bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700"
               >
                 Change Password
