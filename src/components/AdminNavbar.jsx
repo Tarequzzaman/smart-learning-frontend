@@ -1,6 +1,6 @@
 // src/components/AdminNavbar.jsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
@@ -9,14 +9,15 @@ const AdminNavbar = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
     localStorage.removeItem("role");
-    navigate('/login');
+
+    navigate("/login");
   };
 
   return (
     <header className="bg-white shadow-md px-8 py-4 flex justify-between items-center">
       {/* Brand */}
       <h1 className="text-xl font-bold text-indigo-600 tracking-wide">
-         <span className="text-gray-700">Admin Dashboard</span>
+        <span className="text-gray-700">Admin Dashboard</span>
       </h1>
 
       {/* Logout Button */}
