@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTopics, submitUserInterest } from "../../services/topicService";
+import { getUserSelectedTopics } from "../../services/userService";
 
 const emojis = ["🚀", "🧠", "📚", "💡", "🌟", "🧮", "💻", "🔬", "📝", "🎯"];
 
@@ -10,12 +11,24 @@ const TopicSelectionPage = () => {
   const [selectedTopics, setSelectedTopics] = useState([]);
   const scrollRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [allSelectedTopics, setAllSelectedTopics] = useState([]);
 
   useEffect(() => {
     const fetchTopics = async () => {
       try {
         const data = await getTopics();
         setTopics(data);
+
+        const authToken = localStorage.getItem("access_token");
+
+        if (authToken) {
+          const userSelectedTopics = await getUserSelectedTopics();
+          console.log(userSelectedTopics);
+          setAllSelectedTopics(userSelectedTopics);
+          console.log("All selected topics:", allSelectedTopics);
+        } else {
+          console.error("No auth token found.");
+        }
       } catch (err) {
         console.error("Failed to fetch topics", err);
       }
@@ -62,6 +75,8 @@ const TopicSelectionPage = () => {
   };
 
   const isSelected = (topicId) => selectedTopics.includes(topicId);
+  const isDisabled = (topicId) =>
+    allSelectedTopics.some((topic) => topic.id === topicId);
 
   return (
     <main className="bg-white min-h-screen text-gray-800">
@@ -94,13 +109,18 @@ const TopicSelectionPage = () => {
           {topics.map((topic, index) => (
             <div
               key={topic.id}
-              onClick={() => handleTopicClick(topic.id)}
-              className={`cursor-pointer flex-shrink-0 w-72 transition rounded-2xl shadow p-6 text-center
+              onClick={
+                !isDisabled(topic.id) ? () => handleTopicClick(topic.id) : null
+              }
+              className={` flex-shrink-0 w-72 transition rounded-2xl shadow p-6 text-center
                 ${
                   isSelected(topic.id)
-                    ? "bg-indigo-200 border-2 border-indigo-500"
+                    ? "bg-indigo-300 border-2 border-indigo-500"
                     : "bg-indigo-50 hover:bg-indigo-100"
-                }`}
+                }
+                ${isDisabled(topic.id) ? "opacity-30 cursor-not-allowed" : ""}
+                ${!isDisabled(topic.id) ? " cursor-pointer" : ""}
+                `}
             >
               <div className="text-5xl mb-4">
                 {emojis[index % emojis.length]}
