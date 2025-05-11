@@ -24,6 +24,7 @@ const DashboardHome = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    const hasSkipped = localStorage.getItem("interestModalSkipped");
     const checkUserInterest = async () => {
       const interested = await hasUserGivenInterests();
       if (!interested) {
@@ -33,7 +34,9 @@ const DashboardHome = () => {
       }
     };
 
-    checkUserInterest();
+    if (!hasSkipped) {
+      checkUserInterest();
+    }
   }, []);
 
   useEffect(() => {
@@ -90,6 +93,7 @@ const DashboardHome = () => {
   const handleSkip = () => {
     console.log("User skipped selecting topics.");
     setShowInterestModal(false);
+    localStorage.setItem("interestModalSkipped", "true");
   };
 
   const handleEnrollAndNavigate = async (course) => {
