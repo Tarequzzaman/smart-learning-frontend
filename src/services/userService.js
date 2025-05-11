@@ -31,7 +31,6 @@ export const getUsers = async () => {
   }));
 };
 
-
 export const registerUser = async (userData) => {
   try {
     const response = await fetch(`${API_URL}/users/`, {
@@ -60,8 +59,6 @@ export const registerUser = async (userData) => {
   }
 };
 
-
-
 export const loginUser = async (email, password) => {
   try {
     const response = await fetch(`${API_URL}/log_in`, {
@@ -80,9 +77,8 @@ export const loginUser = async (email, password) => {
       }),
     });
 
-    console.log(email)
-    console.log(password)
-
+    console.log(email);
+    console.log(password);
 
     const data = await response.json();
 
@@ -93,7 +89,6 @@ export const loginUser = async (email, password) => {
     throw error;
   }
 };
-
 
 export const updateUser = async (userId, updatedData) => {
   const token = localStorage.getItem("access_token");
@@ -148,6 +143,35 @@ export const deleteUser = async (userId) => {
     throw new Error(error.detail || "Failed to delete user");
   }
 
-  return true; 
+  return true;
 };
 
+export const getUserSelectedTopics = async () => {
+  const authToken = localStorage.getItem("access_token");
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user || !user.id) {
+    throw new Error("User ID not found in localStorage.");
+  }
+  const userId = user.id;
+
+  try {
+    const response = await fetch(`${API_URL}/users/${userId}/selected-topics`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Failed to fetch selected topics.");
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
