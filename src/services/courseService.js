@@ -161,3 +161,40 @@ export const fetchCourseById = async (courseId) => {
       })),
     };
   };
+
+
+
+
+  export const updateCourseProgress = async (courseId, progress) => {
+    const token = localStorage.getItem("access_token");
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    if (!token) {
+      throw new Error("Access token not found. Please log in.");
+    }
+  
+    if (!user || !user.id) {
+      throw new Error("User info not found.");
+    }
+  
+    const response = await fetch(`${API_URL}/courses/update_progress`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        course_id: courseId,
+        user_id: user.id,
+        progress: progress,
+      }),
+    });
+  
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Failed to update course progress");
+    }
+  
+    return await response.json();
+  };
+  
