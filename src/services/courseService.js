@@ -85,7 +85,7 @@ export const fetchCourseById = async (courseId) => {
       id: course.id,
       title: course.course_title,
       description: course.course_description,
-      progress: course.progress || 0,
+      progress: course.course_progress || 0,
       duration: 40, // placeholder, or get from API if available
       difficulty: course.course_level,
     }));
