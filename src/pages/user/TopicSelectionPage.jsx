@@ -9,6 +9,7 @@ const TopicSelectionPage = () => {
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const scrollRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allSelectedTopics, setAllSelectedTopics] = useState([]);
@@ -23,9 +24,7 @@ const TopicSelectionPage = () => {
 
         if (authToken) {
           const userSelectedTopics = await getUserSelectedTopics();
-          console.log(userSelectedTopics);
           setAllSelectedTopics(userSelectedTopics);
-          console.log("All selected topics:", allSelectedTopics);
         } else {
           console.error("No auth token found.");
         }
@@ -58,25 +57,29 @@ const TopicSelectionPage = () => {
   };
 
   const handleContinue = async () => {
-    console.log("Selected Topics:", selectedTopics);
-
-    setIsSubmitting(true); // Set submitting state to true
-
+    setIsSubmitting(true);
     try {
-      // Call the topic service to submit the selected topics
       const data = await submitUserInterest(selectedTopics);
       alert(`Your selected topics have been submitted: ${data.message}`);
       navigate("/dashboard");
     } catch (error) {
-      alert(error.message); // Show error message if submission fails
+      alert(error.message);
     } finally {
-      setIsSubmitting(false); // Reset submitting state
+      setIsSubmitting(false);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   const isSelected = (topicId) => selectedTopics.includes(topicId);
   const isDisabled = (topicId) =>
     allSelectedTopics.some((topic) => topic.id === topicId);
+
+  const filteredTopics = topics.filter((topic) =>
+    topic.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <main className="bg-white min-h-screen text-gray-800">
@@ -89,6 +92,31 @@ const TopicSelectionPage = () => {
           Choose the topics that spark your curiosity! We'll personalize your
           learning experience.
         </p>
+      </section>
+
+      {/* Search Bar */}
+      <section className="max-w-xl mx-auto mb-10 px-4">
+        <div className="relative">
+          <span className="absolute inset-y-0 left-4 flex items-center text-gray-400">
+            🔍
+          </span>
+          <input
+            type="text"
+            placeholder="Search topics like 'cooking', 'history', or 'coding'..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-full pl-12 pr-12 py-3 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 placeholder-gray-400"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-4 inset-y-0 flex items-center text-gray-400 hover:text-gray-600"
+              aria-label="Clear search"
+            >
+              ✖
+            </button>
+          )}
+        </div>
       </section>
 
       {/* Carousel Section */}
@@ -106,21 +134,21 @@ const TopicSelectionPage = () => {
           ref={scrollRef}
           className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-6 scroll-smooth"
         >
-          {topics.map((topic, index) => (
+          {filteredTopics.map((topic, index) => (
             <div
               key={topic.id}
               onClick={
                 !isDisabled(topic.id) ? () => handleTopicClick(topic.id) : null
               }
-              className={` flex-shrink-0 w-72 transition rounded-2xl shadow p-6 text-center
+              className={`flex-shrink-0 w-72 transition rounded-2xl shadow p-6 text-center
                 ${
                   isSelected(topic.id)
                     ? "bg-indigo-300 border-2 border-indigo-500"
                     : "bg-indigo-50 hover:bg-indigo-100"
                 }
                 ${isDisabled(topic.id) ? "opacity-30 cursor-not-allowed" : ""}
-                ${!isDisabled(topic.id) ? " cursor-pointer" : ""}
-                `}
+                ${!isDisabled(topic.id) ? "cursor-pointer" : ""}
+              `}
             >
               <div className="text-5xl mb-4">
                 {emojis[index % emojis.length]}
