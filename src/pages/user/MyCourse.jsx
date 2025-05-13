@@ -1,150 +1,176 @@
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { fetchCourseById , updateCourseProgress} from '../../services/courseService';
-import { useLocation } from 'react-router-dom';
+import { fetchCourseById, updateCourseProgress } from '../../services/courseService';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const CourseDetail = () => {
-  const [courseData, setCourseData] = useState(null);
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+  /* ───────── state ───────── */
+  const [courseData, setCourseData]               = useState(null);
+  const [activeSectionIndex, setActiveSectionIndex]     = useState(0);
   const [activeSubsectionIndex, setActiveSubsectionIndex] = useState(0);
-  const [unlockedSteps, setUnlockedSteps] = useState([{ section: 0, subsection: 0 }]);
-  const [progress, setProgress] = useState(0);
+  const [unlockedSteps, setUnlockedSteps]               = useState([{ section: 0, subsection: 0 }]);
+  const [progress, setProgress]                         = useState(0);
+  const [sectionQuizStatus, setSectionQuizStatus]       = useState({});
 
   const location = useLocation();
-  const { courseId } = location.state || {};
+  const navigate  = useNavigate();
+  const { courseId, completedSection } = location.state || {};
 
-
-useEffect(() => {
+  /* ───── fetch course once ───── */
+  useEffect(() => {
     const fetchCourse = async () => {
+      if (!courseId) return console.error('No course ID provided');
       try {
-        if (!courseId) {
-          console.error("No course ID provided");
-          return;
-        }
         const data = await fetchCourseById(courseId);
         setCourseData(data);
-  
+
         const { sections, course_progress } = data;
-        const total = sections.reduce((acc, section) => acc + section.subsections.length, 0);
-        const unlockedCount = Math.floor((course_progress / 90) * total); // Assuming quiz is last 10%
-  
+        const total = sections.reduce((a, s) => a + s.subsections.length + 1, 0);
+        const unlockedCount = Math.floor((course_progress / 100) * total);
+        
+
         const steps = [];
         let counter = 0;
-        let found = false;
-        for (let sec = 0; sec < sections.length && !found; sec++) {
-          for (let sub = 0; sub < sections[sec].subsections.length; sub++) {
-            steps.push({ section: sec, subsection: sub });
+        let stop    = false;
+        for (let s = 0; s < sections.length && !stop; s++) {
+          for (let sub = 0; sub < sections[s].subsections.length; sub++) {
+            steps.push({ section: s, subsection: sub });
             if (counter === unlockedCount) {
-              setActiveSectionIndex(sec);
+              setActiveSectionIndex(s);
               setActiveSubsectionIndex(sub);
-              found = true;
+              stop = true;
               break;
             }
             counter++;
           }
         }
-  
         setUnlockedSteps(steps);
-        setProgress(Math.min(course_progress, 90)); // cap at 90 if needed
-  
-      } catch (error) {
-        console.error("Failed to fetch course:", error.message);
+        setProgress(Math.round(Math.min(course_progress, 100)));
+    } catch (err) {
+        console.error('Failed to fetch course:', err.message);
       }
     };
-  
     fetchCourse();
   }, [courseId]);
-  
 
-  if (!courseId) return <div className="flex justify-center items-center h-screen text-red-500">No course selected.</div>;
-  if (!courseData) return <div className="flex justify-center items-center h-screen">Loading course...</div>;
+  /* ───── handle quiz completion ───── */
+  useEffect(() => {
+    if (!courseData || completedSection === undefined) return;
+
+    // mark quiz passed
+    setSectionQuizStatus(prev => ({ ...prev, [completedSection]: true }));
+
+    const nextSection = completedSection + 1;
+    if (nextSection < courseData.sections.length) {
+      setUnlockedSteps(prev =>
+        prev.some(p => p.section === nextSection && p.subsection === 0)
+          ? prev
+          : [...prev, { section: nextSection, subsection: 0 }]
+      );
+      setActiveSectionIndex(nextSection);
+      setActiveSubsectionIndex(0);
+    }
+
+    // progress bump (10 % kept for final badge)
+    const total = courseData.sections.reduce((a, s) => a + s.subsections.length + 1, 0);
+    const increment = 100 / total;
+    const newProgress = Math.round(Math.min(progress + increment, 100));    
+    setProgress(newProgress);
+    updateCourseProgress(courseId, newProgress).catch(console.error);
+
+    // clean location.state so refresh doesn’t retrigger
+    navigate(location.pathname, { replace: true, state: { courseId } });
+  }, [completedSection, courseData]);
+
+  /* ───── guards ───── */
+  if (!courseId)
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        No course selected.
+      </div>
+    );
+  if (!courseData)
+    return (
+      <div className="flex justify-center items-center h-screen">Loading course...</div>
+    );
 
   const { course_title, sections } = courseData;
   const activeContent = sections[activeSectionIndex].subsections[activeSubsectionIndex];
 
-  const totalContentCount = sections.reduce((acc, section) => acc + section.subsections.length, 0);
+  const isUnlocked = (s, sub) =>
+    unlockedSteps.some(step => step.section === s && step.subsection === sub);
 
-  const isUnlocked = (section, subsection) =>
-    unlockedSteps.some((step) => step.section === section && step.subsection === subsection);
+  const isSectionEnd =
+    activeSubsectionIndex === sections[activeSectionIndex].subsections.length - 1;
 
-  const unlockNext = () => {
-    let nextSec = activeSectionIndex;
-    let nextSub = activeSubsectionIndex + 1;
-
-    if (nextSub >= sections[nextSec].subsections.length) {
-      nextSec++;
-      nextSub = 0;
-    }
-
-    if (nextSec < sections.length && nextSub < sections[nextSec]?.subsections.length) {
-      const alreadyUnlocked = isUnlocked(nextSec, nextSub);
-      if (!alreadyUnlocked) {
-        setUnlockedSteps((prev) => [...prev, { section: nextSec, subsection: nextSub }]);
-      }
-    }
-  };
+  const quizDone = !!sectionQuizStatus[activeSectionIndex];
 
   const hasPrevious = () => activeSectionIndex > 0 || activeSubsectionIndex > 0;
 
-  const hasNext = () =>
-    activeSectionIndex < sections.length - 1 ||
-    activeSubsectionIndex < sections[activeSectionIndex].subsections.length - 1;
+  const canGoForward =
+    !isSectionEnd ||
+    (isSectionEnd && quizDone && activeSectionIndex < sections.length - 1);
 
+  /* ───── navigation ───── */
   const handlePrevious = () => {
     if (activeSubsectionIndex > 0) {
-      setActiveSubsectionIndex((prev) => prev - 1);
+      setActiveSubsectionIndex(prev => prev - 1);
     } else if (activeSectionIndex > 0) {
-      const newSec = activeSectionIndex - 1;
+      const newSec  = activeSectionIndex - 1;
       const lastSub = sections[newSec].subsections.length - 1;
       setActiveSectionIndex(newSec);
       setActiveSubsectionIndex(lastSub);
     }
   };
 
-  const handleNext = async () => {
-    let nextSec = activeSectionIndex;
-    let nextSub = activeSubsectionIndex + 1;
-  
-    if (nextSub >= sections[nextSec].subsections.length) {
-      nextSec++;
-      nextSub = 0;
-    }
-  
-    const isAlreadyUnlocked = isUnlocked(nextSec, nextSub);
-  
-    if (!isAlreadyUnlocked) {
-      setUnlockedSteps((prev) => [...prev, { section: nextSec, subsection: nextSub }]);
-  
-      // Update progress state
-      const increment = Math.round(90 / totalContentCount);
-      const newProgress = Math.min(progress + increment, 90);
-      setProgress(newProgress);
-  
-      try {
-        await updateCourseProgress(courseId, newProgress);
-      } catch (error) {
-        console.error("Failed to update progress:", error.message);
-      }
-    }
-  
-    // Navigate
+  const handleNext = () => {
+    // still inside current section
     if (activeSubsectionIndex < sections[activeSectionIndex].subsections.length - 1) {
-      setActiveSubsectionIndex((prev) => prev + 1);
-    } else if (activeSectionIndex < sections.length - 1) {
-      setActiveSectionIndex((prev) => prev + 1);
+      const nextSub = activeSubsectionIndex + 1;
+      const nextSec = activeSectionIndex;
+
+      /* ★ FIX — unlock and record progress for the next subsection */
+      if (!isUnlocked(nextSec, nextSub)) {
+        setUnlockedSteps(prev => [...prev, { section: nextSec, subsection: nextSub }]);
+
+        const total = sections.reduce((a, s) => a + s.subsections.length, 0);
+        const increment = Math.round(90 / total);
+        const newProgress = Math.round(Math.min(progress + increment, 100));
+        setProgress(newProgress);
+        updateCourseProgress(courseId, newProgress).catch(console.error);
+      }
+
+      setActiveSubsectionIndex(nextSub);
+      return;
+    }
+
+    // end-of-section: only proceed if quiz passed
+    if (quizDone && activeSectionIndex < sections.length - 1) {
+      const nextSection = activeSectionIndex + 1;
+
+      if (!isUnlocked(nextSection, 0)) {
+        setUnlockedSteps(prev => [...prev, { section: nextSection, subsection: 0 }]);
+      }
+
+      setActiveSectionIndex(nextSection);
       setActiveSubsectionIndex(0);
     }
   };
-  
 
-  const isLastContent =
-    activeSectionIndex === sections.length - 1 &&
-    activeSubsectionIndex === sections[sections.length - 1].subsections.length - 1;
+  const handleAttemptQuiz = () => {
+       navigate('/dashboard/quiz', {
+             state: {                         // ◀ send both pieces of state
+               courseId,
+               sectionIndex: activeSectionIndex,
+             },
+           });
+  };
 
+  /* ───── render ───── */
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Sidebar */}
+      {/* ───────── Sidebar ───────── */}
       <aside className="w-72 bg-white shadow-lg border-r flex flex-col sticky top-0 h-full">
         <div className="p-6 border-b">
           <div className="mb-6 mt-4">
@@ -156,19 +182,22 @@ useEffect(() => {
               <div
                 className="bg-indigo-600 h-3 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
-              ></div>
+              />
             </div>
           </div>
         </div>
 
-        {/* Section Navigation */}
+        {/* sections list */}
         <div className="flex-1 overflow-y-auto p-6">
           {sections.map((section, secIdx) => (
             <div key={secIdx} className="mb-5">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">{section.section_title}</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                {section.section_title}
+              </h3>
               <ul className="space-y-2">
                 {section.subsections.map((sub, subIdx) => {
-                  const isActive = activeSectionIndex === secIdx && activeSubsectionIndex === subIdx;
+                  const isActive =
+                    activeSectionIndex === secIdx && activeSubsectionIndex === subIdx;
                   const unlocked = isUnlocked(secIdx, subIdx);
                   return (
                     <li key={subIdx}>
@@ -199,7 +228,7 @@ useEffect(() => {
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* ───────── Content ───────── */}
       <main className="flex-1 p-8 overflow-y-auto h-full">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-indigo-700 mt-8 mb-14">
           {course_title}
@@ -217,15 +246,14 @@ useEffect(() => {
             remarkPlugins={[remarkGfm]}
             components={{
               code({ node, inline, className, children, ...props }) {
-                const isHtmlCodeTag = node?.tagName === 'code' && !inline && !className;
-                if (inline || isHtmlCodeTag) {
+                const isHtmlInline = node?.tagName === 'code' && !inline && !className;
+                if (inline || isHtmlInline) {
                   return (
                     <code className="bg-gray-200 rounded px-1 py-0.5 text-sm font-mono">
                       {children}
                     </code>
                   );
                 }
-
                 const language = className?.replace('language-', '') || '';
                 return (
                   <div className="flex justify-center my-4">
@@ -236,7 +264,9 @@ useEffect(() => {
                         </code>
                       </pre>
                       {language && (
-                        <div className="text-right text-xs text-gray-500 italic mt-2">{language}</div>
+                        <div className="text-right text-xs text-gray-500 italic mt-2">
+                          {language}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -248,17 +278,22 @@ useEffect(() => {
           </ReactMarkdown>
         </div>
 
-        {/* Quiz Prompt */}
-        {isLastContent && (
+        {/* ───────── Quiz Prompt ───────── */}
+        {isSectionEnd && !quizDone && (
           <div className="mt-8 text-center">
-            <p className="text-lg font-semibold text-indigo-700 mb-4">Evaluate your knowledge</p>
-            <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700">
+            <p className="text-lg font-semibold text-indigo-700 mb-4">
+              Ready to test your understanding of this section?
+            </p>
+            <button
+              onClick={handleAttemptQuiz}
+              className="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700"
+            >
               Attempt Quiz
             </button>
           </div>
         )}
 
-        {/* Navigation */}
+        {/* ───────── Nav Buttons ───────── */}
         <div className="flex justify-between mt-10">
           <button
             onClick={handlePrevious}
@@ -274,14 +309,14 @@ useEffect(() => {
 
           <button
             onClick={handleNext}
-            disabled={!hasNext()}
+            disabled={!canGoForward}
             className={`rounded px-4 py-2 text-sm font-semibold border ${
-              hasNext()
+              canGoForward
                 ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 : 'bg-gray-50 text-gray-400 cursor-not-allowed'
             }`}
           >
-            Next →
+            {isSectionEnd ? 'Next Section →' : 'Next →'}
           </button>
         </div>
       </main>
