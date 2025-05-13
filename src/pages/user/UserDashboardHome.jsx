@@ -269,7 +269,7 @@ const CourseCard = ({ course, showProgress, onClick }) => {
           </>
         )}
         <div className="flex justify-between items-center text-gray-500 text-xs">
-          <span>{course.duration}h</span>
+          <span> Course Category </span>
           <span
             className={`px-2 py-1 rounded-full font-medium ${
               course.difficulty === "Beginner"
