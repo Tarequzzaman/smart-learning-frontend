@@ -175,3 +175,54 @@ export const getUserSelectedTopics = async () => {
     throw error;
   }
 };
+
+export const sendRegisterPasswordCode = async (email) => {
+  try {
+    const response = await fetch(`${API_URL}/register/send-code`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Failed to send reset code.");
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const verifyRegisterPasswordCode = async (email, code) => {
+  try {
+    const response = await fetch(`${API_URL}/register/verify-code`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        code: code,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Failed to verify code.");
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
