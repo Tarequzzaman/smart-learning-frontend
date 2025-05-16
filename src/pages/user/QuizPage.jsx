@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getQuizzes } from '../../services/quizServices';
+import { getQuizzes, markQuizCompleted } from '../../services/quizServices';
 
 const Quiz = () => {
   /* ───────── incoming state ───────── */
@@ -37,6 +37,14 @@ const Quiz = () => {
     if (courseId !== undefined && sectionIndex !== undefined) fetchQuizzes();
   }, [courseId, sectionIndex]);
 
+  /* ───────── trigger completion API only after pass ───────── */
+  useEffect(() => {
+    const quizPassed = correctAnswersCount === quizzes.length;
+    if (showResult && quizPassed && courseId !== undefined && sectionIndex !== undefined) {
+      markQuizCompleted(courseId, sectionIndex);
+    }
+  }, [showResult, correctAnswersCount, courseId, sectionIndex]);
+
   /* ───────── helpers ───────── */
   const currentQuiz = quizzes[currentQuizIndex];
 
@@ -70,6 +78,7 @@ const Quiz = () => {
 
   if (showResult) {
     const quizPassed = correctAnswersCount === quizzes.length;
+
     return (
       <main className="flex flex-col items-center justify-center min-h-screen bg-white text-center px-6">
         <h1

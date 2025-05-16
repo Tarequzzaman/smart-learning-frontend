@@ -1,6 +1,4 @@
-// src/services/quizService.js
-
-const quizzes = [
+const staticQuizzes = [
   {
     id: 1,
     question: "What is the capital of Australia?",
@@ -43,6 +41,62 @@ const quizzes = [
   },
 ];
 
-export const getQuizzes = async () => {
-  return quizzes;
+export const getQuizzes = async (courseId, sectionIndex) => {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8004/section-quizzes?course_id=${courseId}&section_index=${sectionIndex}`,
+      {
+        headers: {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error('API request failed');
+
+    const apiQuizzes = await response.json();
+
+    if (Array.isArray(apiQuizzes) && apiQuizzes.length > 0) {
+      return apiQuizzes;
+    }
+
+    console.warn('⚠️ Empty quiz list from API, falling back to static quizzes');
+    return staticQuizzes;
+
+  } catch (error) {
+    console.error('🔥 Error fetching quizzes from API:', error);
+    return staticQuizzes;
+  }
+};
+
+
+export const markQuizCompleted = async (courseId, sectionIndex) => {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    console.warn("🚫 No token found — cannot mark quiz completed");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8004/courses/${courseId}/sections/${sectionIndex}/quiz-complete`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "*/*",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error("❌ Failed to mark quiz complete:", response.status);
+    } else {
+      console.log("✅ Quiz marked as complete");
+    }
+  } catch (err) {
+    console.error("🔥 Error calling quiz-complete API:", err);
+  }
 };
