@@ -1,3 +1,5 @@
+// DashboardHome.jsx
+
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -81,7 +83,7 @@ const DashboardHome = () => {
     setIsSubmitting(true);
 
     try {
-      const data = await submitUserInterest(selectedTopics);
+      await submitUserInterest(selectedTopics);
       setShowInterestModal(false);
     } catch (error) {
       alert(error.message);
@@ -91,7 +93,6 @@ const DashboardHome = () => {
   };
 
   const handleSkip = () => {
-    console.log("User skipped selecting topics.");
     setShowInterestModal(false);
     localStorage.setItem("interestModalSkipped", "true");
   };
@@ -169,69 +170,95 @@ const DashboardHome = () => {
         </p>
       </section>
 
-      {/* === My Learning Section === */}
-      <section className="relative max-w-7xl mx-auto mb-16 group">
-        <h2 className="text-3xl font-bold text-indigo-700 mb-6">My Learning</h2>
+{/* === My Learning Section === */}
+<section className="relative max-w-7xl mx-auto mb-16 group">
+  <h2 className="text-3xl font-bold text-indigo-700 mb-6">My Learning</h2>
 
-        {myCourses.length === 0 ? (
-          <p className="text-gray-500 text-center mb-8">
-            You have not enrolled in any courses yet.
-          </p>
-        ) : (
-          <div
-            ref={myCoursesRef}
-            className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
-          >
-            {myCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                showProgress
-                onClick={() =>
-                  navigate("/dashboard/detail-courses", {
-                    state: { courseId: course.id },
-                  })
-                }
-              />
-            ))}
-          </div>
-        )}
-      </section>
+  {myCourses.length === 0 ? (
+    <p className="text-gray-500 text-center mb-8">
+      You have not enrolled in any courses yet.
+    </p>
+  ) : (
+    <>
+      <div
+        ref={myCoursesRef}
+        className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
+      >
+        {myCourses.map((course) => (
+          <CourseCard
+            key={course.id}
+            course={course}
+            showProgress
+            onClick={() =>
+              navigate("/dashboard/detail-courses", {
+                state: { courseId: course.id },
+              })
+            }
+          />
+        ))}
+      </div>
+
+      {/* ✅ See More Button (Bottom aligned) */}
+      <div className="flex justify-end px-12 mt-4">
+        <button
+          onClick={() => navigate("/dashboard/my-courses")}
+          className="text-sm text-indigo-600 hover:underline font-medium"
+        >
+          See more →
+        </button>
+      </div>
+    </>
+  )}
+</section>
 
       {/* === Recommended for You Section === */}
-      <section className="relative max-w-7xl mx-auto mb-20 group">
-        <h2 className="text-3xl font-bold text-indigo-700 mb-6">
-          Recommended for You
-        </h2>
+     {/* === Recommended for You Section === */}
+<section className="relative max-w-7xl mx-auto mb-20 group">
+  <h2 className="text-3xl font-bold text-indigo-700 mb-6">
+    Recommended for You
+  </h2>
 
-        {recommendedCourses.length === 0 ? (
-          <p className="text-gray-500 text-center mb-8">
-            No recommended courses available at the moment.
-          </p>
-        ) : (
-          <div
-            ref={recommendedCoursesRef}
-            className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
-          >
-            {recommendedCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                onClick={() => handleEnrollAndNavigate(course)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+  {recommendedCourses.length === 0 ? (
+    <p className="text-gray-500 text-center mb-8">
+      No recommended courses available at the moment.
+    </p>
+  ) : (
+    <>
+      <div
+        ref={recommendedCoursesRef}
+        className="flex space-x-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth snap-x snap-mandatory"
+      >
+        {recommendedCourses.map((course) => (
+          <CourseCard
+            key={course.id}
+            course={course}
+            onClick={() => handleEnrollAndNavigate(course)}
+          />
+        ))}
+      </div>
+
+      {/* ✅ See More Button (Bottom aligned) */}
+      <div className="flex justify-end px-12 mt-4">
+        <button
+          onClick={() => navigate("/dashboard/recommended")}
+          className="text-sm text-indigo-600 hover:underline font-medium"
+        >
+          See more →
+        </button>
+      </div>
+    </>
+  )}
+</section>
     </main>
   );
 };
 
+// ✅ Updated card background to bg-gray-100
 const CourseCard = ({ course, showProgress, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer flex-shrink-0 w-[300px] h-[340px] bg-white hover:bg-gray-50 transition-all transform hover:-translate-y-1 rounded-xl shadow p-6 flex flex-col justify-between snap-start"
+      className="cursor-pointer flex-shrink-0 w-[300px] h-[340px] bg-gray-100 hover:bg-gray-200 transition-all transform hover:-translate-y-1 rounded-xl shadow p-6 flex flex-col justify-between snap-start"
     >
       <div>
         <div className="mb-2">
@@ -239,19 +266,20 @@ const CourseCard = ({ course, showProgress, onClick }) => {
             📚 Course
           </span>
         </div>
-        <h3 className="text-md font-bold text-gray-800 mb-2 truncate">
-          {course.title}
-        </h3>
-        <p
-          className="text-sm text-gray-600 leading-snug overflow-hidden text-ellipsis"
-          style={{
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-          }}
-        >
-          {course.description}
-        </p>
+        <h3 className="text-md font-bold text-gray-800 mb-2 leading-snug break-words line-clamp-2">
+  {course.title}
+</h3>
+<div
+  className="text-sm text-gray-600 leading-snug overflow-hidden"
+  style={{
+    display: "-webkit-box",
+    WebkitLineClamp: 6, // was 3 — increase to 5 or 6
+    WebkitBoxOrient: "vertical",
+  }}
+  dangerouslySetInnerHTML={{ __html: course.description.replace(/\n/g, "<br>") }}
+/>
+
+
       </div>
 
       <div className="mt-4">
@@ -269,7 +297,7 @@ const CourseCard = ({ course, showProgress, onClick }) => {
           </>
         )}
         <div className="flex justify-between items-center text-gray-500 text-xs">
-          <span> Course Category </span>
+          <span>Course Category</span>
           <span
             className={`px-2 py-1 rounded-full font-medium ${
               course.difficulty === "Beginner"
