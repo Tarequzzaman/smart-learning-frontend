@@ -6,18 +6,18 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const CourseDetail = () => {
   /* ───────── state ───────── */
-  const [courseData, setCourseData]               = useState(null);
-  const [activeSectionIndex, setActiveSectionIndex]     = useState(0);
+  const [courseData, setCourseData]                       = useState(null);
+  const [activeSectionIndex, setActiveSectionIndex]       = useState(0);
   const [activeSubsectionIndex, setActiveSubsectionIndex] = useState(0);
-  const [unlockedSteps, setUnlockedSteps]               = useState([{ section: 0, subsection: 0 }]);
-  const [progress, setProgress]                         = useState(0);
-  const [sectionQuizStatus, setSectionQuizStatus]       = useState({});
+  const [unlockedSteps, setUnlockedSteps]                 = useState([{ section: 0, subsection: 0 }]);
+  const [progress, setProgress]                           = useState(0);
+  const [sectionQuizStatus, setSectionQuizStatus]         = useState({});
 
-  const location = useLocation();
+  const location  = useLocation();
   const navigate  = useNavigate();
   const { courseId, completedSection } = location.state || {};
 
-  /* ───── fetch course once ───── */
+  /* ───── fetch once ───── */
   useEffect(() => {
     const fetchCourse = async () => {
       if (!courseId) return console.error('No course ID provided');
@@ -25,21 +25,24 @@ const CourseDetail = () => {
         const data = await fetchCourseById(courseId);
         setCourseData(data);
 
-        const { sections, course_progress } = data;
-        const total = sections.reduce((a, s) => a + s.subsections.length + 1, 0);
-        const unlockedCount = Math.floor((course_progress / 100) * total);
-        
+        /* seed quiz status map */
+        setSectionQuizStatus(data.quiz_status || {});
 
-        const steps = [];
-        let counter = 0;
-        let stop    = false;
-        for (let s = 0; s < sections.length && !stop; s++) {
+        /* restore unlock / active indices from stored progress */
+        const { sections, course_progress } = data;
+        const total         = sections.reduce((a, s) => a + s.subsections.length + 1, 0);
+        const unlockedCount = Math.floor((course_progress / 100) * total);
+
+        const steps   = [];
+        let counter   = 0;
+        let finished  = false;
+        for (let s = 0; s < sections.length && !finished; s++) {
           for (let sub = 0; sub < sections[s].subsections.length; sub++) {
             steps.push({ section: s, subsection: sub });
             if (counter === unlockedCount) {
               setActiveSectionIndex(s);
               setActiveSubsectionIndex(sub);
-              stop = true;
+              finished = true;
               break;
             }
             counter++;
@@ -47,40 +50,31 @@ const CourseDetail = () => {
         }
         setUnlockedSteps(steps);
         setProgress(Math.round(Math.min(course_progress, 100)));
-    } catch (err) {
+      } catch (err) {
         console.error('Failed to fetch course:', err.message);
       }
     };
     fetchCourse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
-  /* ───── handle quiz completion ───── */
+  /* ───── quiz finished (PASS only) ───── */
   useEffect(() => {
     if (!courseData || completedSection === undefined) return;
 
-    // mark quiz passed
+    /* mark this quiz as passed */
     setSectionQuizStatus(prev => ({ ...prev, [completedSection]: true }));
 
-    const nextSection = completedSection + 1;
-    if (nextSection < courseData.sections.length) {
-      setUnlockedSteps(prev =>
-        prev.some(p => p.section === nextSection && p.subsection === 0)
-          ? prev
-          : [...prev, { section: nextSection, subsection: 0 }]
-      );
-      setActiveSectionIndex(nextSection);
-      setActiveSubsectionIndex(0);
-    }
-
-    // progress bump (10 % kept for final badge)
-    const total = courseData.sections.reduce((a, s) => a + s.subsections.length + 1, 0);
-    const increment = 100 / total;
-    const newProgress = Math.round(Math.min(progress + increment, 100));    
+    /* bump progress (leaving 10 % room for final badge/whatever) */
+    const total      = courseData.sections.reduce((a, s) => a + s.subsections.length + 1, 0);
+    const increment  = 100 / total;
+    const newProgress = Math.round(Math.min(progress + increment, 100));
     setProgress(newProgress);
     updateCourseProgress(courseId, newProgress).catch(console.error);
 
-    // clean location.state so refresh doesn’t retrigger
+    /* clean state so a page refresh doesn’t re-run this block */
     navigate(location.pathname, { replace: true, state: { courseId } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completedSection, courseData]);
 
   /* ───── guards ───── */
@@ -125,17 +119,17 @@ const CourseDetail = () => {
   };
 
   const handleNext = () => {
-    // still inside current section
+    /* inside current section */
     if (activeSubsectionIndex < sections[activeSectionIndex].subsections.length - 1) {
       const nextSub = activeSubsectionIndex + 1;
       const nextSec = activeSectionIndex;
 
-      /* ★ FIX — unlock and record progress for the next subsection */
+      /* unlock next subsection */
       if (!isUnlocked(nextSec, nextSub)) {
         setUnlockedSteps(prev => [...prev, { section: nextSec, subsection: nextSub }]);
 
-        const total = sections.reduce((a, s) => a + s.subsections.length, 0);
-        const increment = Math.round(90 / total);
+        const total      = sections.reduce((a, s) => a + s.subsections.length, 0);
+        const increment  = Math.round(90 / total);
         const newProgress = Math.round(Math.min(progress + increment, 100));
         setProgress(newProgress);
         updateCourseProgress(courseId, newProgress).catch(console.error);
@@ -145,7 +139,7 @@ const CourseDetail = () => {
       return;
     }
 
-    // end-of-section: only proceed if quiz passed
+    /* end-of-section → allowed only after quiz passed */
     if (quizDone && activeSectionIndex < sections.length - 1) {
       const nextSection = activeSectionIndex + 1;
 
@@ -159,12 +153,12 @@ const CourseDetail = () => {
   };
 
   const handleAttemptQuiz = () => {
-       navigate('/dashboard/quiz', {
-             state: {                         // ◀ send both pieces of state
-               courseId,
-               sectionIndex: activeSectionIndex,
-             },
-           });
+    navigate('/dashboard/quiz', {
+      state: {
+        courseId,
+        sectionIndex: activeSectionIndex,
+      },
+    });
   };
 
   /* ───── render ───── */

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTopics } from "../../services/topicService"; // assumes you have this service
+import { getTopics } from "../../services/topicService";
+
+const ITEMS_PER_PAGE = 9;
 
 const ExploreTopics = () => {
   const [topics, setTopics] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +25,10 @@ const ExploreTopics = () => {
     fetchTopics();
   }, []);
 
+  const totalPages = Math.ceil(topics.length / ITEMS_PER_PAGE);
+  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentTopics = topics.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
   return (
     <main className="bg-white min-h-screen text-gray-800">
       <section className="text-center py-20 bg-indigo-50 mb-12">
@@ -33,21 +40,46 @@ const ExploreTopics = () => {
         </p>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 mb-16">
         {isLoading ? (
           <p className="text-center text-gray-500">Loading topics...</p>
         ) : topics.length === 0 ? (
           <p className="text-center text-gray-500">No topics available at the moment.</p>
         ) : (
-          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {topics.map((topic) => (
-              <TopicCard
-                key={topic.id}
-                topic={topic}
-                onClick={() => navigate(`/dashboard/topics/${topic.id}`)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {currentTopics.map((topic) => (
+                <TopicCard
+                  key={topic.id}
+                  topic={topic}
+                  onClick={() => navigate(`/dashboard/topics/${topic.id}`)}
+                />
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center mt-10 space-x-2">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+
+              <span className="px-4 py-2 text-gray-700 font-semibold">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </div>
     </main>
