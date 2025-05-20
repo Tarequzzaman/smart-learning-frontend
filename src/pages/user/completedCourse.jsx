@@ -1,49 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCompletedCourses } from "../../services/courseService";
 
 const CompletedCourses = () => {
   const navigate = useNavigate();
   const [completedCourses, setCompletedCourses] = useState([]);
 
   useEffect(() => {
-    setCompletedCourses([
-      {
-        id: 1,
-        title: "Introduction to Python",
-        description: "Learn Python basics for automation, scripting, and data analysis.",
-        difficulty: "Beginner",
-      },
-      {
-        id: 2,
-        title: "React Development",
-        description: "Modern React.js development using hooks, JSX, and components.",
-        difficulty: "Intermediate",
-      },
-      {
-        id: 3,
-        title: "Machine Learning Fundamentals",
-        description: "Supervised learning, unsupervised learning, model evaluation metrics.",
-        difficulty: "Intermediate",
-      },
-      {
-        id: 4,
-        title: "Data Structures and Algorithms",
-        description: "Master core computer science fundamentals for coding interviews.",
-        difficulty: "Intermediate",
-      },
-      {
-        id: 5,
-        title: "Advanced SQL Techniques",
-        description: "Deep dive into joins, indexes, query optimization, and big data.",
-        difficulty: "Advanced",
-      },
-      {
-        id: 6,
-        title: "Cloud Fundamentals",
-        description: "Learn AWS, GCP, and Azure basics: storage, compute, networking.",
-        difficulty: "Beginner",
-      },
-    ]);
+    const fetchCompleted = async () => {
+      try {
+        const courses = await getCompletedCourses();
+        setCompletedCourses(courses);
+      } catch (err) {
+        console.error("Error fetching completed courses:", err.message);
+      }
+    };
+
+    fetchCompleted();
   }, []);
 
   return (
@@ -54,7 +27,8 @@ const CompletedCourses = () => {
           Your Completed Courses
         </h1>
         <p className="text-lg md:text-xl mb-6 max-w-2xl mx-auto text-gray-600">
-          Congratulations! Keep building your knowledge by exploring more topics.
+          Congratulations! Keep building your knowledge by exploring more
+          topics.
         </p>
       </section>
 
@@ -67,7 +41,11 @@ const CompletedCourses = () => {
             {completedCourses.map((course) => (
               <div
                 key={course.id}
-                onClick={() => navigate('/dashboard/learning-feed', { state: { course } })}
+                onClick={() =>
+                  navigate("/dashboard/detail-courses", {
+                    state: { courseId: course.id },
+                  })
+                }
                 className="cursor-pointer flex-shrink-0 bg-white hover:bg-gray-50 transition-all transform hover:-translate-y-1 rounded-xl shadow p-6 flex flex-col justify-between snap-start"
               >
                 {/* Top Section */}
