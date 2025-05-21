@@ -31,6 +31,20 @@ const VerifyCode = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -48,7 +62,6 @@ const VerifyCode = () => {
       setMessage(response.message || "Code verified successfully.");
 
       const result = await registerUser(userData);
-      alert("Account created successfully!");
 
       localStorage.removeItem("newUserData");
       navigate("/login");

@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { createTopic, getTopics, updateTopic, deleteTopic } from '../../services/topicService';
+import {
+  createTopic,
+  getTopics,
+  updateTopic,
+  deleteTopic,
+} from "../../services/topicService";
 
 const Topics = () => {
   const initialTopics = [];
   const [topics, setTopics] = useState(initialTopics);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [editTopic, setEditTopic] = useState(null);
   const [topicToDelete, setTopicToDelete] = useState(null);
   const [newTopic, setNewTopic] = useState(null);
-  const [viewCoursesFor, setViewCoursesFor] = useState(null);  // 👈 For modal view
+  const [viewCoursesFor, setViewCoursesFor] = useState(null); // 👈 For modal view
   const [currentPage, setCurrentPage] = useState(1);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
   const topicsPerPage = 7;
 
   useEffect(() => {
@@ -18,7 +25,7 @@ const Topics = () => {
         const fetched = await getTopics();
         setTopics(fetched);
       } catch (err) {
-        alert(`Failed to load topics: ${err.message}`);
+        setError(err.message || "Something went wrong.");
       }
     };
 
@@ -47,12 +54,32 @@ const Topics = () => {
 
       setEditTopic(null);
     } catch (err) {
-      alert(`Failed to update topic: ${err.message}`);
+      setError(err.message || "Something went wrong.");
     }
   };
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   return (
     <div className="bg-white rounded shadow p-6">
+      {/* Error popup */}
+      {error && (
+        <div className="mb-4 bg-red-100 text-red-600 p-3 rounded shadow">
+          😔 {error}
+        </div>
+      )}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-indigo-600">Manage Topics</h1>
         <input
@@ -70,7 +97,9 @@ const Topics = () => {
       {/* Add Topic Button */}
       <div className="flex justify-end mb-4">
         <button
-          onClick={() => setNewTopic({ title: '', description: '', show: true })}
+          onClick={() =>
+            setNewTopic({ title: "", description: "", show: true })
+          }
           className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
         >
           + Add Topic
@@ -85,8 +114,12 @@ const Topics = () => {
               <th className="px-4 py-2 border-b">#</th>
               <th className="px-4 py-2 border-b">Title</th>
               <th className="px-4 py-2 border-b">Description</th>
-              <th className="px-4 py-2 border-b text-center">📚 Course Outlined</th>
-              <th className="px-4 py-2 border-b text-center">🤖 AI-Generated Content</th>
+              <th className="px-4 py-2 border-b text-center">
+                📚 Course Outlined
+              </th>
+              <th className="px-4 py-2 border-b text-center">
+                🤖 AI-Generated Content
+              </th>
               <th className="px-4 py-2 border-b text-center">View Courses</th>
               <th className="px-4 py-2 border-b text-center">Actions</th>
             </tr>
@@ -99,11 +132,17 @@ const Topics = () => {
                 <td className="px-4 py-2 border-b">
                   <div
                     className="whitespace-pre-line"
-                    dangerouslySetInnerHTML={{ __html: topic.description.replace(/\n/g, "<br>") }}
+                    dangerouslySetInnerHTML={{
+                      __html: topic.description.replace(/\n/g, "<br>"),
+                    }}
                   />
                 </td>
-                <td className="px-4 py-2 border-b text-center">{topic.totalCourses}</td>
-                <td className="px-4 py-2 border-b text-center">{topic.aiGeneratedCount}</td>
+                <td className="px-4 py-2 border-b text-center">
+                  {topic.totalCourses}
+                </td>
+                <td className="px-4 py-2 border-b text-center">
+                  {topic.aiGeneratedCount}
+                </td>
                 <td className="px-4 py-2 border-b text-center">
                   <button
                     className="bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600"
@@ -148,8 +187,8 @@ const Topics = () => {
               onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 border rounded ${
                 currentPage === i + 1
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
               }`}
             >
               {i + 1}
@@ -181,8 +220,12 @@ const Topics = () => {
                     className="border rounded p-4 shadow hover:shadow-md transition flex justify-between items-center"
                   >
                     <div>
-                      <h3 className="font-semibold text-indigo-700">{course.course_title}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{course.course_description}</p>
+                      <h3 className="font-semibold text-indigo-700">
+                        {course.course_title}
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {course.course_description}
+                      </p>
                       <div className="text-xs mt-2">
                         <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
                           Level: {course.course_level}
@@ -193,18 +236,22 @@ const Topics = () => {
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                           course.is_detail_created_by_ai
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-yellow-100 text-yellow-700'
+                            ? "bg-green-100 text-green-700"
+                            : "bg-yellow-100 text-yellow-700"
                         }`}
                       >
-                        {course.is_detail_created_by_ai ? 'Generated' : 'Generating'}
+                        {course.is_detail_created_by_ai
+                          ? "Generated"
+                          : "Generating"}
                       </span>
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-600 text-center">No courses available for this topic.</p>
+              <p className="text-gray-600 text-center">
+                No courses available for this topic.
+              </p>
             )}
           </div>
         </div>
@@ -214,25 +261,35 @@ const Topics = () => {
       {editTopic && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded shadow-lg w-full max-w-xl">
-            <h2 className="text-2xl font-semibold mb-6 text-indigo-600">Edit Topic</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-indigo-600">
+              Edit Topic
+            </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Title
+                </label>
                 <input
                   type="text"
                   className="w-full px-4 py-2 border rounded"
                   value={editTopic.title}
-                  onChange={(e) => setEditTopic({ ...editTopic, title: e.target.value })}
+                  onChange={(e) =>
+                    setEditTopic({ ...editTopic, title: e.target.value })
+                  }
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
                 <textarea
                   className="w-full px-4 py-2 border rounded"
                   rows="4"
                   value={editTopic.description}
-                  onChange={(e) => setEditTopic({ ...editTopic, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditTopic({ ...editTopic, description: e.target.value })
+                  }
                 ></textarea>
               </div>
             </div>
@@ -259,25 +316,35 @@ const Topics = () => {
       {newTopic?.show && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded shadow-lg w-full max-w-xl">
-            <h2 className="text-2xl font-semibold mb-6 text-indigo-600">Add New Topic</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-indigo-600">
+              Add New Topic
+            </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Topic Title</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Topic Title
+                </label>
                 <input
                   type="text"
                   className="w-full px-4 py-2 border rounded"
                   value={newTopic.title}
-                  onChange={(e) => setNewTopic({ ...newTopic, title: e.target.value })}
+                  onChange={(e) =>
+                    setNewTopic({ ...newTopic, title: e.target.value })
+                  }
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Topic Description</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Topic Description
+                </label>
                 <textarea
                   className="w-full px-4 py-2 border rounded"
                   rows="4"
                   value={newTopic.description}
-                  onChange={(e) => setNewTopic({ ...newTopic, description: e.target.value })}
+                  onChange={(e) =>
+                    setNewTopic({ ...newTopic, description: e.target.value })
+                  }
                 ></textarea>
               </div>
             </div>
@@ -311,7 +378,7 @@ const Topics = () => {
                     setTopics((prev) => [...prev, newEntry]);
                     setNewTopic(null);
                   } catch (err) {
-                    alert(`Failed to create topic: ${err.message}`);
+                    setError(err.message || "Something went wrong.");
                   }
                 }}
               >
@@ -326,9 +393,12 @@ const Topics = () => {
       {topicToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded shadow-lg w-full max-w-md text-center">
-            <h2 className="text-2xl font-semibold text-red-600 mb-4">Confirm Deletion</h2>
+            <h2 className="text-2xl font-semibold text-red-600 mb-4">
+              Confirm Deletion
+            </h2>
             <p className="text-gray-700 mb-6">
-              Are you sure you want to delete <span className="font-bold">{topicToDelete.title}</span>?
+              Are you sure you want to delete{" "}
+              <span className="font-bold">{topicToDelete.title}</span>?
             </p>
             <div className="flex justify-center gap-4">
               <button
@@ -342,10 +412,12 @@ const Topics = () => {
                 onClick={async () => {
                   try {
                     await deleteTopic(topicToDelete.id);
-                    setTopics((prev) => prev.filter((t) => t.id !== topicToDelete.id));
+                    setTopics((prev) =>
+                      prev.filter((t) => t.id !== topicToDelete.id)
+                    );
                     setTopicToDelete(null);
                   } catch (err) {
-                    alert(`Failed to delete topic: ${err.message}`);
+                    setError(err.message || "Something went wrong.");
                   }
                 }}
               >

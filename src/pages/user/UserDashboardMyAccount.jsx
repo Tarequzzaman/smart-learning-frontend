@@ -53,10 +53,10 @@ const UserProfile = () => {
       };
       localStorage.setItem("user", JSON.stringify(updatedUserFromResponse));
 
-      alert("Profile updated successfully!");
+      setMessage("User Details Updated Successfully.");
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+      setError(err.message || "Something went wrong.");
     }
   };
 
@@ -87,127 +87,157 @@ const UserProfile = () => {
     }
   };
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6">
-      <div className="flex w-full max-w-6xl flex-col items-center gap-20 md:flex-row">
-        <div className="hidden flex-1 flex-col items-center justify-center text-center md:flex">
-          <h1 className="mb-4 text-5xl font-extrabold text-indigo-700">
-            Hi, {firstName} 👋
-          </h1>
-          <p className="max-w-sm text-gray-500">
-            Keep your profile updated. Change your email or password securely.
-          </p>
-        </div>
+    <>
+      <div className="flex min-h-screen items-center justify-center bg-white px-6">
+        {/* Error popup */}
+        {error && (
+          <div className="mb-4 bg-red-100 text-red-600 p-3 rounded shadow">
+            😔 {error}
+          </div>
+        )}
+        {/* Success popup */}
+        {message && (
+          <div className="absolute top-20 right-2 bg-green-100 text-green-600 p-4 rounded-lg shadow-lg flex items-center space-x-2">
+            <span className="text-2xl">🎉</span>
+            <p className="text-sm font-medium">{message}</p>
+          </div>
+        )}
 
-        <div className="w-full max-w-lg rounded-lg bg-white p-10 shadow-lg">
-          <form onSubmit={handleSave} className="space-y-6">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                First Name
-              </label>
-              <input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="w-full rounded border border-gray-300 bg-gray-100 p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Last Name
-              </label>
-              <input
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full rounded border border-gray-300 bg-gray-100 p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                type="text"
-                value={email}
-                disabled
-                className="w-full rounded border border-gray-300 bg-gray-100 p-3 text-gray-500 cursor-not-allowed"
-              />
-            </div>
-            <div className="flex justify-between">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="rounded bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="rounded bg-indigo-600 px-6 py-2 text-white transition hover:bg-indigo-700"
-              >
-                Save
-              </button>
-            </div>
-          </form>
+        <div className="flex w-full max-w-6xl flex-col items-center gap-20 md:flex-row">
+          <div className="hidden flex-1 flex-col items-center justify-center text-center md:flex">
+            <h1 className="mb-4 text-5xl font-extrabold text-indigo-700">
+              Hi, {firstName} 👋
+            </h1>
+            <p className="max-w-sm text-gray-500">
+              Keep your profile updated. Change your email or password securely.
+            </p>
+          </div>
 
-          <div className="mt-10">
-            <h3 className="mb-4 text-xl font-bold text-gray-800">
-              Change Password
-            </h3>
-            <div className="rounded-md bg-gray-50 ">
-              <button
-                type="button"
-                onClick={handleResetPassword}
-                className="w-full rounded bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700"
-              >
+          <div className="w-full max-w-lg rounded-lg bg-white p-10 shadow-lg">
+            <form onSubmit={handleSave} className="space-y-6">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  First Name
+                </label>
+                <input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full rounded border border-gray-300 bg-gray-100 p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Last Name
+                </label>
+                <input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full rounded border border-gray-300 bg-gray-100 p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <input
+                  type="text"
+                  value={email}
+                  disabled
+                  className="w-full rounded border border-gray-300 bg-gray-100 p-3 text-gray-500 cursor-not-allowed"
+                />
+              </div>
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="rounded bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded bg-indigo-600 px-6 py-2 text-white transition hover:bg-indigo-700"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-10">
+              <h3 className="mb-4 text-xl font-bold text-gray-800">
                 Change Password
-              </button>
+              </h3>
+              <div className="rounded-md bg-gray-50 ">
+                <button
+                  type="button"
+                  onClick={handleResetPassword}
+                  className="w-full rounded bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700"
+                >
+                  Change Password
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        {isOtpVisible && (
+          <Modal onClose={() => setIsOtpVisible(false)}>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2 text-center">
+              Please check your email
+            </h2>
+            <p className="text-gray-600 text-sm mb-6 text-center">
+              We've sent a code to {email}
+            </p>
+            <OTPInput otp={otp} setOtp={setOtp} />
+            <button className="w-full mt-6 py-2 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
+              Verify OTP
+            </button>
+            <p className="text-center mt-4 text-sm text-gray-500">
+              Didn’t receive an email?{" "}
+              <button className="font-semibold text-indigo-600 hover:underline">
+                Resend
+              </button>
+            </p>
+          </Modal>
+        )}
+
+        {isEmailVerificationVisible && (
+          <Modal onClose={() => setIsEmailVerificationVisible(false)}>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2 text-center">
+              Please check your email
+            </h2>
+            <p className="text-gray-600 text-sm mb-6 text-center">
+              We've sent a code to {email}
+            </p>
+            <OTPInput otp={otp} setOtp={setOtp} />
+            <button className="w-full mt-6 py-2 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
+              Verify Email
+            </button>
+            <p className="text-center mt-4 text-sm text-gray-500">
+              Didn’t receive an email?{" "}
+              <button className="font-semibold text-indigo-600 hover:underline">
+                Resend
+              </button>
+            </p>
+          </Modal>
+        )}
       </div>
-
-      {isOtpVisible && (
-        <Modal onClose={() => setIsOtpVisible(false)}>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2 text-center">
-            Please check your email
-          </h2>
-          <p className="text-gray-600 text-sm mb-6 text-center">
-            We've sent a code to {email}
-          </p>
-          <OTPInput otp={otp} setOtp={setOtp} />
-          <button className="w-full mt-6 py-2 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
-            Verify OTP
-          </button>
-          <p className="text-center mt-4 text-sm text-gray-500">
-            Didn’t receive an email?{" "}
-            <button className="font-semibold text-indigo-600 hover:underline">
-              Resend
-            </button>
-          </p>
-        </Modal>
-      )}
-
-      {isEmailVerificationVisible && (
-        <Modal onClose={() => setIsEmailVerificationVisible(false)}>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2 text-center">
-            Please check your email
-          </h2>
-          <p className="text-gray-600 text-sm mb-6 text-center">
-            We've sent a code to {email}
-          </p>
-          <OTPInput otp={otp} setOtp={setOtp} />
-          <button className="w-full mt-6 py-2 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
-            Verify Email
-          </button>
-          <p className="text-center mt-4 text-sm text-gray-500">
-            Didn’t receive an email?{" "}
-            <button className="font-semibold text-indigo-600 hover:underline">
-              Resend
-            </button>
-          </p>
-        </Modal>
-      )}
-    </div>
+    </>
   );
 };
 

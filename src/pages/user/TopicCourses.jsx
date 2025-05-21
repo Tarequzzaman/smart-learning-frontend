@@ -56,20 +56,29 @@ const TopicCourses = () => {
 
   return (
     <main className="bg-white min-h-screen text-gray-800">
+      {/* Error popup */}
+      {error && (
+        <div className="mb-4 bg-red-100 text-red-600 p-3 rounded shadow">
+          😔 {error}
+        </div>
+      )}
       {/* ✅ Header section */}
       <section className="text-center py-20 bg-indigo-50 mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-indigo-700">
           {topic.title}
         </h1>
         <p className="text-lg md:text-xl mb-6 max-w-2xl mx-auto text-gray-600">
-          Courses available for <span className="font-semibold">{topic.title}</span>
+          Courses available for{" "}
+          <span className="font-semibold">{topic.title}</span>
         </p>
       </section>
 
       {/* ✅ Courses grid */}
       <div className="max-w-7xl mx-auto px-4 pb-20">
         {courses.length === 0 ? (
-          <p className="text-center text-gray-500">No courses available for this topic yet.</p>
+          <p className="text-center text-gray-500">
+            No courses available for this topic yet.
+          </p>
         ) : (
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {courses.map((course) => (

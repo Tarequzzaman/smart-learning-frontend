@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { HiOutlineMail } from 'react-icons/hi';
-import {verifyResetPasswordCode, sendResetPasswordCode}  from  '../services/userProfileService';
-
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { HiOutlineMail } from "react-icons/hi";
+import {
+  verifyResetPasswordCode,
+  sendResetPasswordCode,
+} from "../services/userProfileService";
 
 const VerifyCode = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem('reset_email');
-    setEmail(location.state?.email || storedEmail || '');
+    const storedEmail = localStorage.getItem("reset_email");
+    setEmail(location.state?.email || storedEmail || "");
   }, [location.state]);
 
   const handleSubmit = async (e) => {
@@ -24,7 +26,7 @@ const VerifyCode = () => {
     setMessage(null);
 
     if (code.length !== 6 || !/^\d{6}$/.test(code)) {
-      setError('Please enter a valid 6-digit code.');
+      setError("Please enter a valid 6-digit code.");
       return;
     }
 
@@ -36,11 +38,10 @@ const VerifyCode = () => {
 
       // Navigate after short success message
       setTimeout(() => {
-        navigate('/reset-password', { state: { email } });
+        navigate("/reset-password", { state: { email } });
       }, 1000);
-
     } catch (err) {
-      console.error('Failed to verify code:', err);
+      console.error("Failed to verify code:", err);
       setError(err.message || "Failed to verify code.");
     } finally {
       setLoading(false);
@@ -49,24 +50,40 @@ const VerifyCode = () => {
 
   const handleResendCode = async () => {
     if (!email) {
-      setError('No email found to resend code.');
+      setError("No email found to resend code.");
       return;
     }
-  
+
     setError(null);
     setMessage(null);
     setLoading(true);
-  
+
     try {
       const response = await sendResetPasswordCode(email);
-      setMessage(response.message || `A new verification code has been sent to: ${email}`);
+      setMessage(
+        response.message || `A new verification code has been sent to: ${email}`
+      );
     } catch (err) {
-      console.error('Failed to resend code:', err);
+      console.error("Failed to resend code:", err);
       setError(err.message || "Failed to resend code.");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen flex flex-col items-center pt-24 bg-white px-4 relative">
@@ -76,7 +93,9 @@ const VerifyCode = () => {
       </div>
 
       {/* Heading */}
-      <h2 className="text-2xl font-bold text-gray-900 mb-1">Verify your email</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-1">
+        Verify your email
+      </h2>
       <p className="text-gray-600 mb-8 text-center">
         Enter the 6-digit code sent to <strong>{email}</strong>.
       </p>
@@ -100,7 +119,9 @@ const VerifyCode = () => {
       {/* Form */}
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Verification Code
+          </label>
           <input
             type="text"
             inputMode="numeric"
@@ -118,7 +139,7 @@ const VerifyCode = () => {
           disabled={loading}
           className="w-full bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition"
         >
-          {loading ? 'Verifying...' : 'Verify Code'}
+          {loading ? "Verifying..." : "Verify Code"}
         </button>
       </form>
 
@@ -132,7 +153,9 @@ const VerifyCode = () => {
 
       {/* Back to login */}
       <div className="mt-4 text-sm text-gray-500">
-        <a href="/login" className="hover:underline">Back to login</a>
+        <a href="/login" className="hover:underline">
+          Back to login
+        </a>
       </div>
     </div>
   );
