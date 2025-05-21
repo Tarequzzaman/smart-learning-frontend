@@ -46,7 +46,7 @@ const CompletedCourses = () => {
                     state: { courseId: course.id },
                   })
                 }
-                className="cursor-pointer flex-shrink-0 bg-white hover:bg-gray-50 transition-all transform hover:-translate-y-1 rounded-xl shadow p-6 flex flex-col justify-between snap-start"
+                className="cursor-pointer flex-shrink-0 bg-gray-100 hover:bg-gray-200 transition-all transform hover:-translate-y-1 rounded-xl shadow p-6 flex flex-col justify-between snap-start"
               >
                 {/* Top Section */}
                 <div>
@@ -56,25 +56,27 @@ const CompletedCourses = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-md font-bold text-gray-800 mb-2 truncate">
+                  {/* Title: allow wrap */}
+                  <h3 className="text-md font-bold text-gray-800 mb-2 leading-snug break-words line-clamp-2">
                     {course.title}
                   </h3>
 
-                  <p
-                    className="text-sm text-gray-600 leading-snug overflow-hidden text-ellipsis"
+                  {/* Description: support <br> */}
+                  <div
+                    className="text-sm text-gray-600 leading-snug overflow-hidden"
                     style={{
                       display: "-webkit-box",
-                      WebkitLineClamp: 3,
+                      WebkitLineClamp: 6,
                       WebkitBoxOrient: "vertical",
                     }}
-                  >
-                    {course.description}
-                  </p>
+                    dangerouslySetInnerHTML={{
+                      __html: course.description.replace(/\n/g, "<br>"),
+                    }}
+                  />
                 </div>
 
                 {/* Bottom Section */}
                 <div className="mt-4">
-                  {/* Always show 100% progress bar */}
                   <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                     <div
                       className="bg-green-500 h-2 rounded-full transition-all duration-500"
@@ -85,7 +87,8 @@ const CompletedCourses = () => {
                     100% completed
                   </p>
 
-                  <div className="flex justify-end items-center text-gray-500 text-xs">
+                  <div className="flex justify-between items-center text-gray-500 text-xs">
+                    <span>Course Category</span>
                     <span
                       className={`px-2 py-1 rounded-full font-semibold ${
                         course.difficulty === "Beginner"

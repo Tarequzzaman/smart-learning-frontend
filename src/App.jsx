@@ -27,6 +27,8 @@ import CourseDetail from "./pages/user/MyCourse";
 import AllTopics from "./pages/user/ExploreTopcs";
 import TopicCourses from "./pages/user/TopicCourses";
 import VerifyCodeSignUp from "./pages/Sign-Up-VerifyCode";
+import MyCourses from "./pages/user/MyCourses";
+import RecommendedCourses from "./pages/user/MyRecommendation"; 
 
 const App = () => {
   const userRole = localStorage.getItem("role"); // "admin" | "user" | null
@@ -81,6 +83,8 @@ const App = () => {
         <Route path="detail-courses" element={<CourseDetail />} />
         <Route path="explore-topics" element={<AllTopics />} />
         <Route path="topics/:id" element={<TopicCourses />} />
+        <Route path="my-courses" element={<MyCourses />} />
+        <Route path="recommended" element={<RecommendedCourses />} />
       </Route>
 
       {/* Catch-all redirect */}
