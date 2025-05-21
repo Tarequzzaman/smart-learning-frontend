@@ -8,6 +8,7 @@ import {
   registerUser,
   sendRegisterPasswordCode,
 } from "../services/userService";
+import { useEffect } from "react";
 
 const SignUpSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is required"),
@@ -53,8 +54,35 @@ const SignUp = () => {
     }
   };
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+      {/* Error popup */}
+      {error && (
+        <div className="mb-4 bg-red-100 text-red-600 p-3 rounded shadow">
+          😔 {error}
+        </div>
+      )}
+
+      {/* Success popup */}
+      {message && (
+        <div className="mb-4 bg-green-100 text-green-600 p-3 rounded shadow">
+          🎉 {message}
+        </div>
+      )}
       {/* Left Side */}
       <div className="hidden lg:flex items-center justify-center w-1/2">
         <img

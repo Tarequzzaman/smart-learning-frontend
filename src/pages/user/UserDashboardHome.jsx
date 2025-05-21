@@ -24,6 +24,8 @@ const DashboardHome = () => {
   const [myCourses, setMyCourses] = useState([]);
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const hasSkipped = localStorage.getItem("interestModalSkipped");
@@ -85,8 +87,9 @@ const DashboardHome = () => {
     try {
       await submitUserInterest(selectedTopics);
       setShowInterestModal(false);
+      setMessage(response.message || "Your Topics Has been Submitted.");
     } catch (error) {
-      alert(error.message);
+      setError(err.message || "Something went wrong.");
     } finally {
       setIsSubmitting(false);
     }
@@ -108,12 +111,32 @@ const DashboardHome = () => {
         state: { courseId: course.id },
       });
     } catch (error) {
-      alert(error.message);
+      setError(err.message || "Something went wrong.");
     }
   };
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   return (
     <main className="bg-white min-h-screen text-gray-800">
+      {/* Error popup */}
+      {error && (
+        <div className="mb-4 bg-red-100 text-red-600 p-3 rounded shadow">
+          😔 {error}
+        </div>
+      )}
       {/* === Interest Modal === */}
       {showInterestModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -149,8 +172,13 @@ const DashboardHome = () => {
                 Skip for now
               </button>
               <button
+                disabled={selectedTopics.length === 0}
                 onClick={handleSubmitInterest}
-                className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white"
+                className={`px-4 py-2 rounded text-white bg-indigo-600 ${
+                  selectedTopics.length !== 0
+                    ? "hover:bg-indigo-700 cursor-pointer"
+                    : "opacity-50 cursor-not-allowed"
+                }`}
               >
                 {isSubmitting ? "Submitting..." : "Submit Interest"}
               </button>

@@ -13,6 +13,8 @@ const TopicSelectionPage = () => {
   const scrollRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allSelectedTopics, setAllSelectedTopics] = useState([]);
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -60,10 +62,10 @@ const TopicSelectionPage = () => {
     setIsSubmitting(true);
     try {
       const data = await submitUserInterest(selectedTopics);
-      alert(`Your selected topics have been submitted: ${data.message}`);
+      setMessage(response.message || "Your Topics Has been Submitted.");
       navigate("/dashboard");
     } catch (error) {
-      alert(error.message);
+      setError(err.message || "Something went wrong.");
     } finally {
       setIsSubmitting(false);
     }
@@ -81,8 +83,35 @@ const TopicSelectionPage = () => {
     topic.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   return (
     <main className="bg-white min-h-screen text-gray-800">
+      {/* Error popup */}
+      {error && (
+        <div className="mb-4 bg-red-100 text-red-600 p-3 rounded shadow">
+          😔 {error}
+        </div>
+      )}
+
+      {/* Success popup */}
+      {message && (
+        <div className="mb-4 bg-green-100 text-green-600 p-3 rounded shadow">
+          🎉 {message}
+        </div>
+      )}
       {/* Header */}
       <section className="text-center py-20 bg-indigo-50 mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-indigo-700">
