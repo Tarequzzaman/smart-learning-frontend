@@ -188,16 +188,18 @@ const TopicSelectionPage = () => {
       )}
 
       {/* Footer Info */}
-      <section className="mt-16 px-4 md:px-12 text-center mb-20">
-        <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
-          Why Pick Topics?
-        </h2>
-        <p className="text-md md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          Each topic represents a custom learning journey with smart content
-          recommendations, progress tracking, and adaptive quizzes. Your picks
-          help us personalize your experience!
-        </p>
-      </section>
+      <div className="pb-24">
+  <section className="mt-16 px-4 md:px-12 text-center">
+    <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+      Why Pick Topics?
+    </h2>
+    <p className="text-md md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+      Each topic represents a custom learning journey with smart content
+      recommendations, progress tracking, and adaptive quizzes. Your picks
+      help us personalize your experience!
+    </p>
+  </section>
+</div>
     </main>
   );
 };
