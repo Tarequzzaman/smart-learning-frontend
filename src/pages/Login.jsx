@@ -3,7 +3,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import loginImage from "../assets/login.png"; // your login image
+import loginImage from "../assets/login.png";
 import { loginUser } from "../services/userService";
 
 const LoginSchema = Yup.object().shape({
@@ -16,8 +16,10 @@ const LoginSchema = Yup.object().shape({
 const Login = () => {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    setLoginError("");
     const { email, password } = values;
     try {
       const response = await loginUser(email, password);
@@ -34,6 +36,9 @@ const Login = () => {
         window.location.href = "/dashboard";
       }
     } catch (error) {
+      const message =
+        error.response?.data?.detail || "Invalid email or password";
+      setLoginError(message);
     } finally {
       setSubmitting(false);
     }
@@ -122,6 +127,13 @@ const Login = () => {
                     Forgot Password?
                   </Link>
                 </div>
+
+                {/* Error Message */}
+                {loginError && (
+                  <div className="text-red-500 text-sm text-center">
+                    {loginError}
+                  </div>
+                )}
 
                 {/* Submit Button */}
                 <button
