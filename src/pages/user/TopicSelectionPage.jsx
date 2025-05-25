@@ -62,10 +62,11 @@ const TopicSelectionPage = () => {
     setIsSubmitting(true);
     try {
       const data = await submitUserInterest(selectedTopics);
-      setMessage(response.message || "Your Topics Has been Submitted.");
+
+      setMessage("Your Topics Has been Submitted.");
       navigate("/dashboard");
     } catch (error) {
-      setError(err.message || "Something went wrong.");
+      setError(error.message || "Something went wrong.");
     } finally {
       setIsSubmitting(false);
     }
@@ -86,6 +87,7 @@ const TopicSelectionPage = () => {
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => setMessage(null), 2000);
+
       return () => clearTimeout(timer);
     }
   }, [message]);
@@ -106,12 +108,6 @@ const TopicSelectionPage = () => {
         </div>
       )}
 
-      {/* Success popup */}
-      {message && (
-        <div className="mb-4 bg-green-100 text-green-600 p-3 rounded shadow">
-          🎉 {message}
-        </div>
-      )}
       {/* Header */}
       <section className="text-center py-20 bg-indigo-50 mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-indigo-700">
@@ -218,17 +214,17 @@ const TopicSelectionPage = () => {
 
       {/* Footer Info */}
       <div className="pb-24">
-  <section className="mt-16 px-4 md:px-12 text-center">
-    <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
-      Why Pick Topics?
-    </h2>
-    <p className="text-md md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
-      Each topic represents a custom learning journey with smart content
-      recommendations, progress tracking, and adaptive quizzes. Your picks
-      help us personalize your experience!
-    </p>
-  </section>
-</div>
+        <section className="mt-16 px-4 md:px-12 text-center">
+          <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+            Why Pick Topics?
+          </h2>
+          <p className="text-md md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            Each topic represents a custom learning journey with smart content
+            recommendations, progress tracking, and adaptive quizzes. Your picks
+            help us personalize your experience!
+          </p>
+        </section>
+      </div>
     </main>
   );
 };
