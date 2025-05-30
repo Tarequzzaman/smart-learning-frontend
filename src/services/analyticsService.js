@@ -1,23 +1,30 @@
 // src/services/analyticsService.js
 
-export const getAnalyticsData = () => {
-    return Promise.resolve({
-      totalUsers: 245,
-      topicsCreated: 36,
-      totalQuizzes: 210,
-      quizzesCompleted: 172,
-      quizCompletionRate: 82,
-      dailyNewUsers: [4, 8, 6, 5, 10, 7, 9],
-      mostAttemptedTopics: [
-        { title: 'Python Basics', users: 94 },
-        { title: 'React Fundamentals', users: 78 },
-        { title: 'AI in Education', users: 66 },
-      ],
-      leastAttemptedTopics: [
-        { title: 'Web Accessibility', users: 7 },
-        { title: 'Docker Essentials', users: 10 },
-        { title: 'Testing with Jest', users: 12 },
-      ],
+const API_URL = "http://Localhost:8004";
+
+export const getAnalyticsData = async () => {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    throw new Error("Access token not found ");
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/stats`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-  };
-  
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Failed to fetch analytics data");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching analytics data:", error);
+    throw error;
+  }
+};
