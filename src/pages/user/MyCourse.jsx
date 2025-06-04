@@ -239,33 +239,68 @@ const CourseDetail = () => {
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
-              code({ node, inline, className, children, ...props }) {
-                const isHtmlInline = node?.tagName === 'code' && !inline && !className;
-                if (inline || isHtmlInline) {
-                  return (
-                    <code className="bg-gray-200 rounded px-1 py-0.5 text-sm font-mono">
+            code({ node, inline, className, children, ...props }) {
+            const isHtmlInline = node?.tagName === 'code' && !inline && !className;
+            if (inline || isHtmlInline) {
+              return (
+                <code className="bg-gray-200 rounded px-1 py-0.5 text-sm font-mono">
+                  {children}
+                </code>
+              );
+            }
+
+            const language = className?.replace('language-', '') || '';
+            const codeString = String(children).trim();
+            const [copied, setCopied] = React.useState(false);
+
+            const handleCopy = () => {
+              navigator.clipboard.writeText(codeString).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              });
+            };
+
+            return (
+              <div className="relative my-4 group">
+                {/* Copy button */}
+                <button
+                  onClick={handleCopy}
+                  className="absolute top-2 right-2 text-gray-400 hover:text-indigo-600 transition-all text-xs"
+                >
+                  {copied ? 'Copied!' : (
+                 <svg
+                  aria-hidden="true"
+                  height="20"
+                  viewBox="0 0 16 16"
+                  width="20"
+                  className="text-gray-500 hover:text-indigo-600 transition"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
+                  <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
+                </svg>
+                  )}
+                </button>
+
+                {/* Code block */}
+                <div className="w-full bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm">
+                  <pre className="overflow-x-auto text-sm text-gray-800">
+                    <code className={`font-mono ${className}`} {...props}>
                       {children}
                     </code>
-                  );
-                }
-                const language = className?.replace('language-', '') || '';
-                return (
-                  <div className="flex justify-center my-4">
-                    <div className="w-full bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
-                      <pre className="overflow-x-auto text-sm text-gray-800">
-                        <code className={`font-mono ${className}`} {...props}>
-                          {children}
-                        </code>
-                      </pre>
-                      {language && (
-                        <div className="text-right text-xs text-gray-500 italic mt-2">
-                          {language}
-                        </div>
-                      )}
+                  </pre>
+                  {language && (
+                    <div className="text-right text-xs text-gray-500 italic mt-2">
+                      {language}
                     </div>
-                  </div>
-                );
-              },
+                  )}
+                </div>
+              </div>
+            );
+          }
+ 
+             
+       
             }}
           >
             {activeContent.content}

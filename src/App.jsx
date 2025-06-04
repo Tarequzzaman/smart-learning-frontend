@@ -85,6 +85,7 @@ const App = () => {
         <Route path="topics/:id" element={<TopicCourses />} />
         <Route path="my-courses" element={<MyCourses />} />
         <Route path="recommended" element={<RecommendedCourses />} />
+           {/* Add new pages here  */}
       </Route>
 
       {/* Catch-all redirect */}
