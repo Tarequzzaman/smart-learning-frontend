@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8004";
+const API_URL = "http://209.38.90.132";
 
 export const getRecommendedCourses = async () => {
   const token = localStorage.getItem("access_token");

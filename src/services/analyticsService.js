@@ -1,6 +1,6 @@
 // src/services/analyticsService.js
 
-const API_URL = "http://Localhost:8004";
+const API_URL = "http://209.38.90.132";
 
 export const getAnalyticsData = async () => {
   const token = localStorage.getItem("access_token");

@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8004"; // Same as you already have
+const API_URL = "http://209.38.90.132";
 
 export const sendResetPasswordCode = async (email) => {
   try {

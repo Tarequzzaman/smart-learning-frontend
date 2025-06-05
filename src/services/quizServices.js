@@ -1,3 +1,7 @@
+
+const API_URL = "http://209.38.90.132";
+
+
 const staticQuizzes = [
   {
     id: 1,
@@ -44,7 +48,7 @@ const staticQuizzes = [
 export const getQuizzes = async (courseId, sectionIndex) => {
   try {
     const response = await fetch(
-      `http://127.0.0.1:8004/section-quizzes?course_id=${courseId}&section_index=${sectionIndex}`,
+      `${API_URL}/section-quizzes?course_id=${courseId}&section_index=${sectionIndex}`,
       {
         headers: {
           'accept': 'application/json',
@@ -81,7 +85,7 @@ export const markQuizCompleted = async (courseId, sectionIndex) => {
 
   try {
     const response = await fetch(
-      `http://127.0.0.1:8004/courses/${courseId}/sections/${sectionIndex}/quiz-complete`,
+      `${API_URL}/courses/${courseId}/sections/${sectionIndex}/quiz-complete`,
       {
         method: "POST",
         headers: {
