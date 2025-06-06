@@ -1,6 +1,6 @@
 // src/services/analyticsService.js
 
-const API_URL = "http://209.38.90.132";
+const API_URL = "https://api.smartlearningchampanion.com";
 
 export const getAnalyticsData = async () => {
   const token = localStorage.getItem("access_token");
