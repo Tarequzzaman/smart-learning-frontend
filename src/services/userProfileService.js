@@ -1,4 +1,4 @@
-const API_URL = "http://api.polanji.com";
+const API_URL = "https://api.polanji.com";
 
 export const sendResetPasswordCode = async (email) => {
   try {

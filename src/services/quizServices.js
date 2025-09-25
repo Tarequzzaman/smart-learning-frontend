@@ -1,5 +1,5 @@
 
-const API_URL = "http://api.polanji.com";
+const API_URL = "https://api.polanji.com";
 
 
 const staticQuizzes = [
