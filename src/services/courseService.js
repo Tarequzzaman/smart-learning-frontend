@@ -1,4 +1,4 @@
-const API_URL = "https://api.smartlearningchampanion.com";
+const API_URL = "http://api.polanji.com";
 
 export const getRecommendedCourses = async () => {
   const token = localStorage.getItem("access_token");

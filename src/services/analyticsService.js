@@ -1,6 +1,4 @@
-// src/services/analyticsService.js
-
-const API_URL = "https://api.smartlearningchampanion.com";
+const API_URL = "http://api.polanji.com";
 
 export const getAnalyticsData = async () => {
   const token = localStorage.getItem("access_token");
